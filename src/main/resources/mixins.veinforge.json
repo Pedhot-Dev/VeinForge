@@ -1,0 +1,24 @@
+{
+  "package": "me.grish.veinforge.mixin",
+  "refmap": "mixins.veinforge.refmap.json",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "client.ClientPlayerEntityAccessor",
+    "client.KeyBindingAccessor",
+    "client.MinecraftAccessor",
+    "client.MixinClientPlayerEntity",
+    "client.MixinClientWorld",
+    "client.MixinLivingEntity",
+    "client.MixinMinecraft",
+    "client.MixinScoreboard",
+    "client.MixinSoundSystem",
+    "client.MixinWorldChunk",
+    "client.MixinWorldRenderer",
+    "client.MixinEntityRenderDispatcher",
+    "gui.MixinHandledScreen",
+    "gui.PlayerListHudAccessor",
+    "network.MixinClientConnection"
+  ]
+}

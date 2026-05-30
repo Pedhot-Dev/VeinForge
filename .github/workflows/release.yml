@@ -1,0 +1,70 @@
+name: Release Version
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract Version
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          
+          if [[ "$VERSION" == *"-pre"* ]]; then
+            echo "RELEASE_TYPE=pre-release" >> $GITHUB_OUTPUT
+          else
+            echo "RELEASE_TYPE=full" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify tag matches gradle.properties
+        run: |
+          PROP_VERSION=$(python -c "import re; import pathlib; m=re.search(r'^version=(.*)$', pathlib.Path('gradle.properties').read_text(), re.M); print(m.group(1).strip() if m else '')")
+          if [[ -z "$PROP_VERSION" ]]; then
+            echo "Failed to read version=... from gradle.properties" >&2
+            exit 1
+          fi
+          if [[ "$PROP_VERSION" != "${{ steps.get_version.outputs.VERSION }}" ]]; then
+            echo "Tag version (${{ steps.get_version.outputs.VERSION }}) does not match gradle.properties ($PROP_VERSION)" >&2
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        name: Setup Java
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v3
+        name: Setup Gradle
+
+      - name: Build Release Artifact
+        run: ./gradlew remapJar -Pversion=${{ steps.get_version.outputs.VERSION }} --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        name: Upload Artifact
+        with:
+          name: mod-jar-${{ steps.get_version.outputs.VERSION }}
+          path: build/libs/*${{ steps.get_version.outputs.VERSION }}.jar
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: build/libs/*${{ steps.get_version.outputs.VERSION }}.jar
+          prerelease: ${{ steps.get_version.outputs.RELEASE_TYPE == 'pre-release' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

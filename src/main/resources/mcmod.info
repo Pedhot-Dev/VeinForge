@@ -1,0 +1,19 @@
+[
+  {
+    "modid": "veinforge",
+    "name": "VeinForge",
+    "description": "Fast, reliable mining automation and pathing tools.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/GrishMahat/VeinForge",
+    "updateUrl": "",
+    "authorList": [
+      "GrishMahat",
+      "ItsNory"
+    ],
+    "credits": "GrishMahat, ItsNory",
+    "logoFile": "assets/veinforge/logo.svg",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

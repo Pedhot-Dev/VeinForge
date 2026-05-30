@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "${modid}",
+  "version": "${version}",
+  "name": "${modName}",
+  "description": "VeinForge - Mining automation mod (blog.grish.site, built by GrishMahat/NorySight/ItNory)",
+  "authors": [
+    "GrishMahat",
+    "NorySight",
+    "ItNory"
+  ],
+  "contact": {},
+  "license": "All Rights Reserved",
+  "icon": "assets/veinforge/icon.png",
+  "environment": "client",
+  "accessWidener": "veinforge.accesswidener",
+  "entrypoints": {
+    "client": [
+      "me.grish.veinforge.VeinForgeClient"
+    ],
+    "modmenu": [
+      "me.grish.veinforge.config.VeinForgeModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "mixins.${modid}.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loaderVersion}",
+    "minecraft": "~${mcversion}",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.13.1"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.github": "https://github.com/GrishMahat/VeinForge",
+        "modmenu.website": "https://blog.grish.site"
+      }
+    }
+  }
+}

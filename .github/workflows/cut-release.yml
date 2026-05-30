@@ -1,0 +1,47 @@
+name: Cut Release Tag
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        name: Setup Java
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v3
+        name: Setup Gradle
+
+      - name: Read version from gradle.properties
+        id: ver
+        run: |
+          VERSION=$(python -c "import re; import pathlib; m=re.search(r'^version=(.*)$', pathlib.Path('gradle.properties').read_text(), re.M); print(m.group(1).strip() if m else '')")
+          if [[ -z "$VERSION" ]]; then
+            echo "Failed to read version=... from gradle.properties" >&2
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          TAG="v${{ steps.ver.outputs.VERSION }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists: $TAG" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"

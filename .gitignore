@@ -1,0 +1,45 @@
+# Gradle
+.gradle/
+build/
+.kotlin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.factorypath
+.project
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# Minecraft / Loom
+run/
+logs/
+bin/
+replay_recordings/
+dumps/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Misc
+*.log
+*.swp
+*.bak
+temp/
+tmp/
+test/
+
+# Docs are generally not versioned in this fork,
+docs/**
