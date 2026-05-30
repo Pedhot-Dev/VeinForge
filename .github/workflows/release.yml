@@ -52,7 +52,7 @@ jobs:
         name: Setup Gradle
 
       - name: Build Release Artifact
-        run: ./gradlew remapJar -Pversion=${{ steps.get_version.outputs.VERSION }} --no-daemon
+        run: ./gradlew remapJar -Pversion=${{ steps.get_version.outputs.VERSION }} --no-daemon --dependency-verification=off
 
       - uses: actions/upload-artifact@v4
         name: Upload Artifact
