@@ -123,7 +123,7 @@ object MovementHelper {
             block == Blocks.LADDER -> true
             block == Blocks.FARMLAND || block == Blocks.GRASS_BLOCK -> true
             block == Blocks.ENDER_CHEST || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST -> true
-            block == Blocks.GLASS || block == Blocks.WHITE_STAINED_GLASS -> true
+            block == Blocks.GLASS || block == Blocks.STAINED_GLASS.white() -> true
             block is StairBlock -> true
             block == Blocks.SEA_LANTERN -> true
             isWotah(state) -> {

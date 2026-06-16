@@ -1,7 +1,7 @@
 package me.grish.veinforge.client.overlay;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -244,7 +244,7 @@ public abstract class TextHud extends AbstractHUDElement {
       return (lines.size() * lineStep) - getLineSpacingPx();
    }
 
-   private void fillRoundedRect(GuiGraphics context, int x1, int y1, int x2, int y2, int radius, int color) {
+    private void fillRoundedRect(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int radius, int color) {
       if (x2 <= x1 || y2 <= y1) {
          return;
       }
@@ -264,7 +264,7 @@ public abstract class TextHud extends AbstractHUDElement {
       }
    }
 
-   private void drawRoundedOutline(GuiGraphics context, int x1, int y1, int x2, int y2, int radius, int color) {
+    private void drawRoundedOutline(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int radius, int color) {
       int w = x2 - x1;
       int h = y2 - y1;
       if (w <= 1 || h <= 1) {
@@ -290,7 +290,7 @@ public abstract class TextHud extends AbstractHUDElement {
       }
    }
 
-   private void drawPanelChrome(GuiGraphics context, int panelX, int panelY, int panelW, int panelH) {
+    private void drawPanelChrome(GuiGraphicsExtractor context, int panelX, int panelY, int panelW, int panelH) {
       // context.fill(panelX + SHADOW_OFFSET_PX, panelY + SHADOW_OFFSET_PX, panelX + panelW + SHADOW_OFFSET_PX, panelY + panelH + SHADOW_OFFSET_PX, COLOR_SHADOW);
 
       fillRoundedRect(context, panelX, panelY, panelX + panelW, panelY + panelH, PANEL_CORNER_RADIUS_PX, COLOR_BG_OUTER);
@@ -333,7 +333,7 @@ public abstract class TextHud extends AbstractHUDElement {
       return Math.max(minY, Math.min(panelY, maxY));
    }
 
-   private void renderInternal(GuiGraphics context, float tickDelta, boolean example, boolean forceShow) {
+    private void renderInternal(GuiGraphicsExtractor context, float tickDelta, boolean example, boolean forceShow) {
       if (!forceShow && !shouldShow()) return;
 
       float preferredScale = resolveRenderScale();
@@ -385,7 +385,7 @@ public abstract class TextHud extends AbstractHUDElement {
 
           if (firstTextLine) {
              Component titleComponent = componentWithHudFont(line);
-             context.drawString(mc.font, titleComponent, renderX, currentY, getAccentColor(), false);
+             context.text(mc.font, titleComponent, renderX, currentY, getAccentColor(), false);
 
              if (i + 1 < lines.size()) {
                 int sepY = currentY + mc.font.lineHeight + 2;
@@ -396,7 +396,7 @@ public abstract class TextHud extends AbstractHUDElement {
              continue;
           }
 
-          context.drawString(mc.font, componentWithHudFont(line), renderX, currentY, COLOR_TEXT_MAIN, false);
+          context.text(mc.font, componentWithHudFont(line), renderX, currentY, COLOR_TEXT_MAIN, false);
           currentY += lineStep;
       }
 
@@ -404,12 +404,12 @@ public abstract class TextHud extends AbstractHUDElement {
    }
 
    @Override
-   public void render(GuiGraphics context, float tickDelta) {
+    public void render(GuiGraphicsExtractor context, float tickDelta) {
       renderInternal(context, tickDelta, false, false);
    }
 
    @Override
-   public void renderForEditor(GuiGraphics context, float tickDelta) {
+    public void renderForEditor(GuiGraphicsExtractor context, float tickDelta) {
       renderInternal(context, tickDelta, true, true);
    }
 

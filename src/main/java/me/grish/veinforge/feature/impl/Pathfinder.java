@@ -14,7 +14,7 @@ import me.grish.veinforge.pathfinder.goal.Goal;
 import me.grish.veinforge.pathfinder.movement.CalculationContext;
 import me.grish.veinforge.util.PlayerUtil;
 import me.grish.veinforge.util.RenderUtil;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -383,11 +383,11 @@ public class Pathfinder extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       renderInWorld(context);
    }
 
-   public void renderInWorld(WorldRenderContext context) {
+   public void renderInWorld(LevelRenderContext context) {
       // this.pathExecutor.onRender();
       Deque<Path> paths = new LinkedList<>(this.pathExecutor.getPathQueue());
       if (pathExecutor.getCurrentPath() != null) {

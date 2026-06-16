@@ -20,7 +20,7 @@ import me.grish.veinforge.util.tablist.TabListParser;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -74,7 +74,7 @@ public class EventManager {
 
    private static void registerRenderEvents() {
       // World rendering (replaces RenderWorldLastEvent)
-      WorldRenderEvents.AFTER_ENTITIES.register(context -> {
+      LevelRenderEvents.AFTER_ENTITIES.register(context -> {
          Minecraft mc = Minecraft.getInstance();
          if (mc.level == null || mc.player == null) return;
 

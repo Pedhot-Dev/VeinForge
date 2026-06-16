@@ -13,10 +13,9 @@ public final class VFRenderLayers {
     */
    public static final RenderType QUADS_DEPTH = RenderType.create(
            "veinforge:quads_depth",
-           RenderSetup.builder(VFRenderPipelines.QUADS_DEPTH)
-                   .sortOnUpload()
-                   .bufferSize(1536)
-                   .createRenderSetup()
+            RenderSetup.builder(VFRenderPipelines.QUADS_DEPTH)
+                    .sortOnUpload()
+                    .createRenderSetup()
    );
 
    /**
@@ -25,10 +24,9 @@ public final class VFRenderLayers {
     */
    public static final RenderType QUADS_NO_DEPTH = RenderType.create(
            "veinforge:quads_no_depth",
-           RenderSetup.builder(VFRenderPipelines.QUADS_NO_DEPTH)
-                   .sortOnUpload()
-                   .bufferSize(1536)
-                   .createRenderSetup()
+            RenderSetup.builder(VFRenderPipelines.QUADS_NO_DEPTH)
+                    .sortOnUpload()
+                    .createRenderSetup()
    );
 
    /**
@@ -37,10 +35,9 @@ public final class VFRenderLayers {
     */
    public static final RenderType LINES_NO_DEPTH = RenderType.create(
            "veinforge:lines_no_depth",
-           RenderSetup.builder(VFRenderPipelines.LINES_NO_DEPTH)
-                   .sortOnUpload()
-                   .bufferSize(1536)
-                   .createRenderSetup()
+            RenderSetup.builder(VFRenderPipelines.LINES_NO_DEPTH)
+                    .sortOnUpload()
+                    .createRenderSetup()
    );
 
    private VFRenderLayers() {

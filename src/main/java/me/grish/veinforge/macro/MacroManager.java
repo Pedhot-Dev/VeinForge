@@ -13,9 +13,9 @@ import me.grish.veinforge.macro.impl.PowderMacro.PowderMacro;
 import me.grish.veinforge.macro.impl.RouteMiner.RouteMinerMacro;
 import me.grish.veinforge.util.KeyPressUtil;
 import me.grish.veinforge.util.Logger;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Manages macro lifecycle and event dispatch.
@@ -181,7 +181,7 @@ public class MacroManager {
    /**
     * Called for world rendering.
     */
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
       if (this.currentMacro == null) {
          return;
       }
@@ -191,7 +191,7 @@ public class MacroManager {
    /**
     * Called for HUD rendering.
     */
-   public void onHudRender(GuiGraphics drawContext) {
+    public void onHudRender(GuiGraphicsExtractor drawContext) {
       if (this.currentMacro == null) {
          return;
       }

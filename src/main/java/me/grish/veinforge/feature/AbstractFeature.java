@@ -8,9 +8,9 @@ import me.grish.veinforge.event.UpdateTablistEvent;
 import me.grish.veinforge.failsafe.AbstractFailsafe.Failsafe;
 import me.grish.veinforge.util.Logger;
 import me.grish.veinforge.util.helper.Clock;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.protocol.Packet;
@@ -140,14 +140,14 @@ public abstract class AbstractFeature {
       this.onTick();
    }
 
-   public final void handleWorldRender(WorldRenderContext context) {
+   public final void handleWorldRender(LevelRenderContext context) {
       if (!this.enabled) {
          return;
       }
       this.onWorldRender(context);
    }
 
-   public final void handleHudRender(GuiGraphics drawContext) {
+    public final void handleHudRender(GuiGraphicsExtractor drawContext) {
       if (!this.enabled) {
          return;
       }
@@ -220,11 +220,11 @@ public abstract class AbstractFeature {
    protected void onTick() {
    }
 
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
    }
 
-   protected void onHudRender(GuiGraphics drawContext) {
-   }
+    protected void onHudRender(GuiGraphicsExtractor drawContext) {
+    }
 
    protected void onChat(String message) {
    }

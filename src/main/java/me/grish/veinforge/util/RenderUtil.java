@@ -5,21 +5,21 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.grish.veinforge.util.render.VFRenderLayers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
 
 import java.awt.*;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Simple world + HUD rendering helpers.
  * <p>
- * World rendering is batched per-frame via {@link #beginWorldRender(PoseStack, MultiBufferSource)}
+ * World rendering is batched per-frame via {@link #beginWorldRender(PoseStack, Function)}
  * and {@link #endWorldRender()}.
  */
 public final class RenderUtil {
@@ -35,14 +35,14 @@ public final class RenderUtil {
    private static final float DEFAULT_LINE_WIDTH = 2.0f;
    private static final float DEFAULT_THIN_LINE_WIDTH = 1.0f;
    private static PoseStack activeWorldMatrices;
-   private static MultiBufferSource activeWorldConsumers;
+    private static Function<RenderType, VertexConsumer> activeWorldConsumers;
    private static boolean pushedWorldMatrices;
 
    private RenderUtil() {
       // no instantiation
    }
 
-   public static void beginWorldRender(PoseStack matrices, MultiBufferSource consumers) {
+    public static void beginWorldRender(PoseStack matrices, Function<RenderType, VertexConsumer> consumers) {
       activeWorldMatrices = matrices;
       activeWorldConsumers = consumers;
       pushedWorldMatrices = false;
@@ -214,7 +214,7 @@ public final class RenderUtil {
       int a = color.getAlpha();
 
       PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.getBuffer(RenderTypes.linesTranslucent());
+      VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.linesTranslucent());
 
       float dx = (float) (end.x - start.x);
       float dy = (float) (end.y - start.y);
@@ -282,7 +282,7 @@ public final class RenderUtil {
       int a = color.getAlpha();
 
       PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.getBuffer(VFRenderLayers.LINES_NO_DEPTH);
+      VertexConsumer consumer = activeWorldConsumers.apply(VFRenderLayers.LINES_NO_DEPTH);
 
       consumer.addVertex(entry, (float) start.x, (float) start.y, (float) start.z).setColor(r, g, b, a);
       consumer.addVertex(entry, (float) end.x, (float) end.y, (float) end.z).setColor(r, g, b, a);
@@ -308,7 +308,7 @@ public final class RenderUtil {
       int a = color.getAlpha();
 
       PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.getBuffer(layer);
+      VertexConsumer consumer = activeWorldConsumers.apply(layer);
       Vec3 cam = mc.gameRenderer.getMainCamera().position();
 
       Vec3 prevLeft = null;
@@ -437,10 +437,10 @@ public final class RenderUtil {
       PoseStack.Pose entry = activeWorldMatrices.last();
 
       if (filled) {
-         VertexConsumer consumer = activeWorldConsumers.getBuffer(RenderTypes.debugFilledBox());
+         VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.debugFilledBox());
          addFilledBoxVertices(consumer, entry, box, r, g, b, a);
       } else {
-         VertexConsumer consumer = activeWorldConsumers.getBuffer(RenderTypes.lines());
+         VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.lines());
          addOutlineBoxVertices(consumer, entry, box, r, g, b, a);
       }
    }
@@ -448,7 +448,7 @@ public final class RenderUtil {
    /**
     * Render multiple lines of centred HUD text. Scaling is not applied on 1.21.10; text is drawn at normal size.
     */
-   public static void drawMultiLineText(GuiGraphics drawContext, List<String> lines, Color color, float scale) {
+    public static void drawMultiLineText(GuiGraphicsExtractor drawContext, List<String> lines, Color color, float scale) {
       if (lines == null || lines.isEmpty()) {
          return;
       }
@@ -458,7 +458,7 @@ public final class RenderUtil {
       for (String line : lines) {
          int width = textRenderer.width(line);
          int x = (scaledWidth - width) / 2;
-         drawContext.drawString(textRenderer, line, x, yOffset, color.getRGB());
+          drawContext.text(textRenderer, line, x, yOffset, color.getRGB());
          // Advance by twice the font height to separate lines
          yOffset += textRenderer.lineHeight * 2;
       }
@@ -467,14 +467,14 @@ public final class RenderUtil {
    /**
     * Render centred top HUD text at default scale. Scaling is ignored on 1.21.10.
     */
-   public static void drawCenterTopText(GuiGraphics drawContext, String text, Color color) {
+    public static void drawCenterTopText(GuiGraphicsExtractor drawContext, String text, Color color) {
       drawCenterTopText(drawContext, text, color, 3.0f);
    }
 
    /**
     * Render centred top HUD text. Scaling is ignored on 1.21.10.
     */
-   public static void drawCenterTopText(GuiGraphics drawContext, String text, Color color, float scale) {
+    public static void drawCenterTopText(GuiGraphicsExtractor drawContext, String text, Color color, float scale) {
       if (text == null) {
          return;
       }
@@ -482,34 +482,15 @@ public final class RenderUtil {
       int scaledWidth = mc.getWindow().getGuiScaledWidth();
       int width = textRenderer.width(text);
       int x = (scaledWidth - width) / 2;
-      drawContext.drawString(textRenderer, text, x, 0, color.getRGB());
+      drawContext.text(textRenderer, text, x, 0, color.getRGB());
    }
 
    /**
     * Render a billboarded text label in the world. This method retains the original scaling behaviour.
     */
-   public static void drawText(String text, double x, double y, double z, float scale) {
-      if (mc.level == null || mc.player == null) {
-         return;
-      }
-      Vec3 cameraPos = mc.player.getEyePosition(1.0f);
-      double renderX = x - cameraPos.x;
-      double renderY = y - cameraPos.y;
-      double renderZ = z - cameraPos.z;
-      double distance = Math.sqrt(renderX * renderX + renderY * renderY + renderZ * renderZ);
-      float scaleFactor = scale * (float) Math.max(distance / 150.0, 0.1);
-      PoseStack matrices = new PoseStack();
-      matrices.translate(renderX, renderY, renderZ);
-      matrices.mulPose(mc.gameRenderer.getMainCamera().rotation());
-      matrices.scale(-scaleFactor * 0.45f, -scaleFactor * 0.45f, scaleFactor * 0.45f);
-      Font textRenderer = mc.font;
-      Matrix4f matrix = matrices.last().pose();
-      float xOffset = -textRenderer.width(text) / 2.0f;
-      MultiBufferSource.BufferSource immediate = mc.renderBuffers().bufferSource();
-      textRenderer.drawInBatch(text, xOffset, 0.0f, 0xFFFFFFFF, false, matrix, immediate,
-              Font.DisplayMode.NORMAL, 0, 0xF000F0);
-      immediate.endBatch();
-   }
+    public static void drawText(String text, double x, double y, double z, float scale) {
+      // TODO: Reimplement for MC 26.2 - world-space text rendering pipeline changed
+    }
 
    private static void addFilledBoxVertices(VertexConsumer buffer, PoseStack.Pose entry, AABB box, int r, int g, int b, int a) {
       double minX = box.minX;
@@ -610,7 +591,7 @@ public final class RenderUtil {
    /**
     * Deprecated: previously used to draw screen-space overlays. Kept as a no-op to avoid touching call sites.
     */
-   public static void renderQueuedLineOverlays(GuiGraphics drawContext) {
+    public static void renderQueuedLineOverlays(GuiGraphicsExtractor drawContext) {
    }
 
    /**

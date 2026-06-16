@@ -3,7 +3,6 @@ package me.grish.veinforge.util;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.InputConstants;
 import me.grish.veinforge.mixin.client.KeyBindingAccessor;
-import me.grish.veinforge.mixin.client.MinecraftAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
@@ -43,15 +42,15 @@ public class KeyBindUtil {
    );
 
    public static void rightClick() {
-      ((MinecraftAccessor) mc).rightClick();
+      KeyMapping.click(((KeyBindingAccessor) mc.options.keyUse).getBoundKey());
    }
 
    public static void leftClick() {
-      ((MinecraftAccessor) mc).leftClick();
+      KeyMapping.click(((KeyBindingAccessor) mc.options.keyAttack).getBoundKey());
    }
 
    public static void middleClick() {
-      ((MinecraftAccessor) mc).middleClick();
+      KeyMapping.click(((KeyBindingAccessor) mc.options.keyPickItem).getBoundKey());
    }
 
    public static void onTick(KeyMapping key) {
@@ -61,11 +60,11 @@ public class KeyBindUtil {
    }
 
    public static int getRightClickDelayTimer() {
-      return ((MinecraftAccessor) mc).getRightClickDelayTimer();
+      return mc.rightClickDelay;
    }
 
    public static void resetRightClickDelayTimer() {
-      ((MinecraftAccessor) mc).setRightClickDelayTimer(0);
+      mc.rightClickDelay = 0;
    }
 
    public static void setKeyBindState(KeyMapping key, boolean pressed) {

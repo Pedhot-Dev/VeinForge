@@ -5,7 +5,7 @@ import me.grish.veinforge.util.RenderUtil;
 import me.grish.veinforge.util.helper.graph.Graph;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
 import me.grish.veinforge.util.helper.route.WaypointType;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
@@ -109,7 +109,7 @@ public class GraphOverlayRenderer {
    }
 
    public void onWorldRender(
-           WorldRenderContext context,
+           LevelRenderContext context,
            boolean shouldRenderGraphOverlay,
            boolean editing,
            String renderGraphKey,

@@ -3,7 +3,7 @@ package me.grish.veinforge.ui.screen;
 import me.grish.veinforge.client.overlay.AbstractHUDElement;
 import me.grish.veinforge.ui.hud.HUDManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -64,7 +64,7 @@ public class HUDEditorScreen extends Screen {
    }
 
    @Override
-   public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
+   public void renderBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
       // Avoid vanilla blurred background here; calling blur more than once per frame throws.
       context.fill(0, 0, this.width, this.height, 0xB0000000);
 
@@ -91,7 +91,7 @@ public class HUDEditorScreen extends Screen {
    }
 
    @Override
-   public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+   public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
       List<AbstractHUDElement> elements = HUDManager.getInstance().getEditableElements();
       for (AbstractHUDElement element : elements) {
          int w = element.getEditorWidth();
@@ -109,9 +109,9 @@ public class HUDEditorScreen extends Screen {
          boolean isSelected = element == selectedElement;
 
          int outlineColor = isDragging ? 0xFFFFB000 : (isSelected ? 0xFF22D3EE : 0x80FFFFFF);
-         context.renderOutline(x0, y0, w, h, outlineColor);
+         context.outline(x0, y0, w, h, outlineColor);
          if (isSelected && !isDragging) {
-            context.renderOutline(x0 - 1, y0 - 1, w + 2, h + 2, 0x8022D3EE);
+            context.outline(x0 - 1, y0 - 1, w + 2, h + 2, 0x8022D3EE);
          }
 
          String anchorLabel = switch (element.getAnchor()) {
@@ -120,7 +120,7 @@ public class HUDEditorScreen extends Screen {
             case 3 -> "BR";
             default -> "TL";
          };
-         context.drawString(font, anchorLabel, x0 + 2, y0 + 2, 0xD0FFFFFF);
+         context.text(font, anchorLabel, x0 + 2, y0 + 2, 0xD0FFFFFF);
 
          if (hovered || isSelected || isDragging) {
             // Corner handles (only when interacting to keep editor light)
@@ -129,20 +129,20 @@ public class HUDEditorScreen extends Screen {
             int handleBorder = isDragging ? 0xFFFFE0A0 : (isSelected ? 0xFF22D3EE : 0xFF0B0F14);
 
             context.fill(x0 - handle, y0 - handle, x0 + handle + 1, y0 + handle + 1, handleFill);
-            context.renderOutline(x0 - handle, y0 - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
+            context.outline(x0 - handle, y0 - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
 
             context.fill(x0 + w - handle, y0 - handle, x0 + w + handle + 1, y0 + handle + 1, handleFill);
-            context.renderOutline(x0 + w - handle, y0 - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
+            context.outline(x0 + w - handle, y0 - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
 
             context.fill(x0 - handle, y0 + h - handle, x0 + handle + 1, y0 + h + handle + 1, handleFill);
-            context.renderOutline(x0 - handle, y0 + h - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
+            context.outline(x0 - handle, y0 + h - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
 
             context.fill(x0 + w - handle, y0 + h - handle, x0 + w + handle + 1, y0 + h + handle + 1, handleFill);
-            context.renderOutline(x0 + w - handle, y0 + h - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
+            context.outline(x0 + w - handle, y0 + h - handle, handle * 2 + 1, handle * 2 + 1, handleBorder);
 
             String label = element.getClass().getSimpleName() + "  " + w + "x" + h + "  " + Math.round(element.getScale() * 100.0f) + "%";
             int labelY = Math.max(2, y0 - 10);
-            context.drawString(font, label, x0, labelY, 0xE0FFFFFF);
+            context.text(font, label, x0, labelY, 0xE0FFFFFF);
          }
       }
 
@@ -155,16 +155,16 @@ public class HUDEditorScreen extends Screen {
       int saveBg = saveHover ? 0xC022302A : 0xA014161A;
       int saveBorder = saveHover ? 0xFF22D3EE : 0x60FFFFFF;
       context.fill(saveX, resetY, saveX + SAVE_BTN_W, resetY + RESET_BTN_H, saveBg);
-      context.renderOutline(saveX, resetY, SAVE_BTN_W, RESET_BTN_H, saveBorder);
-      context.drawString(font, "Save layout", saveX + 8, resetY + 4, 0xE0FFFFFF);
+      context.outline(saveX, resetY, SAVE_BTN_W, RESET_BTN_H, saveBorder);
+      context.text(font, "Save layout", saveX + 8, resetY + 4, 0xE0FFFFFF);
 
       int resetBg = resetHover ? 0xC0222A30 : 0xA014161A;
       int resetBorder = resetHover ? 0xFF22D3EE : 0x60FFFFFF;
       context.fill(resetX, resetY, resetX + RESET_BTN_W, resetY + RESET_BTN_H, resetBg);
-      context.renderOutline(resetX, resetY, RESET_BTN_W, RESET_BTN_H, resetBorder);
-      context.drawString(font, "Reset layout", resetX + 6, resetY + 4, 0xE0FFFFFF);
+      context.outline(resetX, resetY, RESET_BTN_W, RESET_BTN_H, resetBorder);
+      context.text(font, "Reset layout", resetX + 6, resetY + 4, 0xE0FFFFFF);
 
-      context.drawString(font, "Click select | Drag move | Scroll resize | Arrows nudge (Shift=10) | Right click anchor", 5, height - 15, 0xFFFFFF);
+      context.text(font, "Click select | Drag move | Scroll resize | Arrows nudge (Shift=10) | Right click anchor", 5, height - 15, 0xFFFFFF);
    }
 
    @Override

@@ -7,7 +7,7 @@ import me.grish.veinforge.handler.RotationHandler;
 import me.grish.veinforge.util.*;
 import me.grish.veinforge.util.helper.RotationConfiguration;
 import me.grish.veinforge.util.helper.Target;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -227,7 +227,7 @@ public class AutoChestUnlocker extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       chestQueue.forEach(it -> {
          RenderUtil.drawBlock(it, new Color(0, 255, 255, 100));
       });

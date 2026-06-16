@@ -7,7 +7,7 @@ import me.grish.veinforge.feature.impl.rift.AutoStunSnake;
 import me.grish.veinforge.feature.impl.rift.VampireSlayerTracker;
 import me.grish.veinforge.handler.GameStateHandler;
 import me.grish.veinforge.util.helper.location.SubLocation;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.protocol.Packet;
 
@@ -108,7 +108,7 @@ public class Rift extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       if (!VeinForge.config().rift.riftEnabled || !isInLivingCaveOrStillness()) {
          return;
       }

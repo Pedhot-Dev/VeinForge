@@ -7,7 +7,7 @@ import me.grish.veinforge.util.AngleUtil;
 import me.grish.veinforge.util.helper.Angle;
 import me.grish.veinforge.util.helper.RotationConfiguration;
 import me.grish.veinforge.util.helper.Target;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class RotationHandler {
    }
 
    // Called manually from EventManager now (needs to be added there)
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
       if (!enabled || this.configuration == null || this.configuration.rotationType() != RotationConfiguration.RotationType.CLIENT) {
          return;
       }

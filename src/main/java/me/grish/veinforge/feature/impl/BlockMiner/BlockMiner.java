@@ -12,7 +12,7 @@ import me.grish.veinforge.util.InventoryUtil;
 import me.grish.veinforge.util.KeyBindUtil;
 import me.grish.veinforge.util.RenderUtil;
 import me.grish.veinforge.util.helper.MineableBlock;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.Block;
@@ -287,7 +287,7 @@ public class BlockMiner extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       if (this.targetParticlePos != null) {
          RenderUtil.drawPoint(this.targetParticlePos, new Color(255, 0, 0, 100));
       }

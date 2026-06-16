@@ -10,9 +10,9 @@ import me.grish.veinforge.util.*;
 import me.grish.veinforge.util.helper.MineableBlock;
 import me.grish.veinforge.util.helper.route.Route;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Block;
@@ -335,7 +335,7 @@ public class CommissionDebugMode extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       if (!this.enabled) {
          return;
       }
@@ -473,7 +473,7 @@ public class CommissionDebugMode extends AbstractFeature {
    }
 
    @Override
-   protected void onHudRender(GuiGraphics drawContext) {
+    protected void onHudRender(GuiGraphicsExtractor drawContext) {
       if (!this.enabled) {
          return;
       }

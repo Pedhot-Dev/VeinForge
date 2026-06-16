@@ -6,9 +6,9 @@ import me.grish.veinforge.event.UpdateTablistEvent;
 import me.grish.veinforge.ui.hud.elements.CommissionHUD;
 import me.grish.veinforge.util.Logger;
 import me.grish.veinforge.util.helper.Clock;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.List;
 
@@ -89,7 +89,7 @@ public abstract class AbstractMacro {
    public void onTick() {
    }
 
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
    }
 
    public void onChat(String message) {
@@ -98,7 +98,7 @@ public abstract class AbstractMacro {
    public void onTablistUpdate(UpdateTablistEvent event) {
    }
 
-   public void onOverlayRender(GuiGraphics drawContext) {
+    public void onOverlayRender(GuiGraphicsExtractor drawContext) {
    }
 
    public void onReceivePacket(PacketEvent.Received event) {

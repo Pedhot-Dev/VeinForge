@@ -12,8 +12,8 @@ import me.grish.veinforge.util.Logger;
 import me.grish.veinforge.util.helper.graph.Graph;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
 import me.grish.veinforge.util.helper.route.WaypointType;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.minecraft.client.gui.GuiGraphics;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
@@ -514,7 +514,7 @@ public class GraphHandler {
    /**
     * Called for world rendering.
     */
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
       overlayRenderer.onWorldRender(
               context,
               shouldRenderGraphOverlay(),
@@ -528,7 +528,7 @@ public class GraphHandler {
    /**
     * Called for HUD rendering.
     */
-   public void onHudRender(GuiGraphics drawContext) {
+    public void onHudRender(GuiGraphicsExtractor drawContext) {
       // Deprecated: moved to RouteBuilderHUD (movable + consistent panel styling).
    }
 

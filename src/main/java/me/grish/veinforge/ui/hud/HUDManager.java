@@ -11,7 +11,7 @@ import me.grish.veinforge.ui.hud.elements.GlacialCommissionHUD;
 import me.grish.veinforge.ui.hud.elements.InventoryHUD;
 import me.grish.veinforge.ui.hud.elements.PathfinderStatsHUD;
 import me.grish.veinforge.ui.hud.elements.RouteBuilderHUD;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class HUDManager {
       positionsLoaded = true;
    }
 
-   public void onHudRender(GuiGraphics context) {
+   public void onHudRender(GuiGraphicsExtractor context) {
       if (VeinForge.mc().options.hideGui) return;
       ensurePositionsLoaded();
 

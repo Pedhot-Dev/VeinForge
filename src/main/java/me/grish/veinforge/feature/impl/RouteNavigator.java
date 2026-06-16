@@ -17,7 +17,7 @@ import me.grish.veinforge.util.helper.Target;
 import me.grish.veinforge.util.helper.route.Route;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
 import me.grish.veinforge.util.helper.route.WaypointType;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
@@ -374,7 +374,7 @@ public class RouteNavigator extends AbstractFeature {
    }
 
    @Override
-   protected void onWorldRender(WorldRenderContext context) {
+   protected void onWorldRender(LevelRenderContext context) {
       if (!this.isQueued) {
          return;
       }

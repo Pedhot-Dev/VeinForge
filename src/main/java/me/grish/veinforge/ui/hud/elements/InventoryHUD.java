@@ -3,7 +3,7 @@ package me.grish.veinforge.ui.hud.elements;
 import lombok.Getter;
 import me.grish.veinforge.VeinForge;
 import me.grish.veinforge.client.overlay.AbstractHUDElement;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,7 +33,7 @@ public class InventoryHUD extends AbstractHUDElement {
     }
 
     @Override
-    public void render(GuiGraphics context, float tickDelta) {
+    public void render(GuiGraphicsExtractor context, float tickDelta) {
         if (!isEnabled()) return;
         
         Player player = mc.player;
@@ -69,17 +69,17 @@ public class InventoryHUD extends AbstractHUDElement {
         }
     }
 
-    private void renderItem(GuiGraphics context, ItemStack stack, float startX, float startY, int col, int row) {
+    private void renderItem(GuiGraphicsExtractor context, ItemStack stack, float startX, float startY, int col, int row) {
         if (stack.isEmpty()) return;
 
         int x = (int) (startX + WINDOW_PADDING + col * CELL_SIZE + SLOT_PADDING);
         int y = (int) (startY + WINDOW_PADDING + row * CELL_SIZE + SLOT_PADDING);
 
-        context.renderItem(stack, x, y);
-        context.renderItemDecorations(mc.font, stack, x, y);
+        context.item(stack, x, y);
+        context.itemDecorations(mc.font, stack, x, y);
     }
 
-    private void drawChromaOutline(GuiGraphics context, int x, int y, int width, int height) {
+    private void drawChromaOutline(GuiGraphicsExtractor context, int x, int y, int width, int height) {
         long time = System.currentTimeMillis();
         // Simple chroma effect implementation
         // For a perfect gradient we'd need to draw lines with gradients, but simple solid color cycling is easier 

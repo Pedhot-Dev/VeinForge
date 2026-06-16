@@ -3,7 +3,7 @@ package me.grish.veinforge.client.overlay;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract class AbstractHUDElement {
 
@@ -26,13 +26,13 @@ public abstract class AbstractHUDElement {
    protected int anchor = 0;
    protected Minecraft mc = Minecraft.getInstance();
 
-   public abstract void render(GuiGraphics context, float tickDelta);
+   public abstract void render(GuiGraphicsExtractor context, float tickDelta);
 
    /**
     * Render variant used by the HUD editor.
     * Defaults to normal rendering.
     */
-   public void renderForEditor(GuiGraphics context, float tickDelta) {
+   public void renderForEditor(GuiGraphicsExtractor context, float tickDelta) {
       render(context, tickDelta);
    }
 

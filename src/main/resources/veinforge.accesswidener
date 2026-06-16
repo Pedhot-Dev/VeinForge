@@ -1,4 +1,4 @@
-accessWidener v2 named
+accessWidener v2 official
 
 accessible field net/minecraft/world/entity/Entity yRotO F
 accessible field net/minecraft/world/entity/Entity xRotO F
@@ -6,9 +6,3 @@ accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platfor
 accessible field net/minecraft/client/Minecraft missTime I
 accessible field net/minecraft/client/Minecraft rightClickDelay I
 accessible field net/minecraft/client/Minecraft player Lnet/minecraft/client/player/LocalPlayer;
-accessible method net/minecraft/client/Minecraft startUseItem ()V
-accessible method net/minecraft/client/Minecraft startAttack ()Z
-accessible method net/minecraft/client/Minecraft pickBlock ()V
-accessible field net/minecraft/client/renderer/GameRenderer guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
-accessible field net/minecraft/client/gui/GuiGraphics$ScissorStack stack Ljava/util/Deque;
-accessible method net/minecraft/client/gui/GuiGraphics submitBlit (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lcom/mojang/blaze3d/textures/GpuTextureView;Lcom/mojang/blaze3d/textures/GpuSampler;IIIIFFFFI)V

@@ -6,7 +6,7 @@ import me.grish.veinforge.util.KeyBindUtil;
 import me.grish.veinforge.util.Logger;
 import me.grish.veinforge.util.RenderUtil;
 import me.grish.veinforge.util.helper.Clock;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +91,7 @@ public class AutoStunSnake {
       handleBlockUpdate(event.pos(), event.newState());
    }
 
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
       if (!VeinForge.config().rift.riftPredictSnakeTail || trails.isEmpty() || mc.level == null) {
          return;
       }

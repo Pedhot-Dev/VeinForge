@@ -13,7 +13,7 @@ import me.grish.veinforge.util.Logger;
 import me.grish.veinforge.util.helper.route.Route;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
 import me.grish.veinforge.util.helper.route.WaypointType;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.core.BlockPos;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class RouteHandler {
       return instance;
    }
 
-   public void onWorldRender(WorldRenderContext context) {
+   public void onWorldRender(LevelRenderContext context) {
       boolean shouldRender = isRouteRenderActive();
       if (!shouldRender || selectedRoute == null || selectedRoute.isEmpty()) {
          return;
@@ -268,7 +268,7 @@ public class RouteHandler {
       }
    }
 
-   public void onRender(WorldRenderContext context) {
+   public void onRender(LevelRenderContext context) {
       if (!isRouteRenderActive() || this.selectedRoute == null || this.selectedRoute.isEmpty()) {
          return;
       }
