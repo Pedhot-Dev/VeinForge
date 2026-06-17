@@ -33,11 +33,6 @@ public class HUD {
    public boolean enableRouteBuilderHud = true;
    public VeinForgeConfig.HUDPos routeBuilderHUD = new VeinForgeConfig.HUDPos(5, 90, 0, 1.0f);
 
-   @ConfigOption(name = "Enable Inventory HUD", desc = "Show the inventory overlay")
-   @ConfigEditorBoolean
-   public boolean enableInventoryHud = true;
-   public VeinForgeConfig.HUDPos inventoryHUD = new VeinForgeConfig.HUDPos(10, 10, 0, 1.0f);
-
    @ConfigOption(name = "Enable Pathfinder Stats HUD", desc = "Show latest pathfinding telemetry")
    @ConfigEditorBoolean
    public boolean enablePathfinderStatsHud = false;
@@ -47,8 +42,4 @@ public class HUD {
    @ConfigEditorBoolean
    public boolean enableFishingHud = true;
    public VeinForgeConfig.HUDPos fishingHUD = new VeinForgeConfig.HUDPos(5, 185, 0, 1.0f);
-
-   @ConfigOption(name = "Inventory HUD Outline", desc = "Show a chroma outline around the inventory HUD")
-   @ConfigEditorBoolean
-   public boolean inventoryHudOutline = false;
 }

@@ -3,6 +3,7 @@ package me.grish.veinforge.ui.hud.elements;
 import lombok.Getter;
 import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.feature.impl.Pathfinder;
+import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.pathfinder.calculate.PathfindingTelemetry;
 
 import java.util.List;
@@ -13,6 +14,10 @@ public class PathfinderStatsHUD extends TextHud {
    @Getter
    private static final PathfinderStatsHUD instance = new PathfinderStatsHUD();
 
+   public static PathfinderStatsHUD getInstance() {
+      return instance;
+   }
+
    public PathfinderStatsHUD() {
       super();
       this.x = 5;
@@ -22,7 +27,7 @@ public class PathfinderStatsHUD extends TextHud {
 
    @Override
    protected int getAccentColor() {
-      return 0xFF14B8A6;
+      return ColorPalette.EMERALD_400;
    }
 
    @Override
@@ -37,32 +42,32 @@ public class PathfinderStatsHUD extends TextHud {
    @Override
    protected void getLines(List<String> lines, boolean example) {
       if (example) {
-         lines.add("§b§lPathfinder Stats");
-         lines.add("§7Status: §asuccess");
-         lines.add("§7search_ms: §f44.21 §8| §7smoothing_ms: §f2.63");
-         lines.add("§7expanded: §f815 §8| §7open_peak: §f243");
-         lines.add("§7path_len: §f58 §8| §7smooth_len: §f14");
-         lines.add("§7failure: §f-");
+         lines.add("§b§lPATHFINDER STATS");
+         lines.add("§8§m------------------------");
+         lines.add("§8» §7Status: §aSUCCESS");
+         lines.add("§8» §7Time: §f44.2ms §8(§7smooth: §f2.6ms§8)");
+         lines.add("§8» §7Nodes: §f815 §8(§7peak: §f243§8)");
+         lines.add("§8» §7Length: §f58 §8(§7smooth: §f14§8)");
          return;
       }
 
       PathfindingTelemetry telemetry = Pathfinder.getInstance().getLastTelemetry();
-      lines.add("§b§lPathfinder Stats");
+      lines.add("§b§lPATHFINDER STATS");
+      lines.add("§8§m------------------------");
       if (telemetry == null) {
-         lines.add("§7No telemetry yet");
-         lines.add("§8Run §f/debug path <x> <y> <z>§8 first");
+         lines.add("§8» §7No telemetry recorded.");
+         lines.add("§8» §7Use §f/debug path§7 first.");
          return;
       }
 
-      String status = telemetry.isSuccess() ? "§asuccess" : "§cfailed";
+      String status = telemetry.isSuccess() ? "§aSUCCESS" : "§cFAILED";
       String failure = telemetry.getFailureReason().isEmpty() ? "-" : telemetry.getFailureReason();
-      lines.add("§7Status: " + status + (telemetry.isDirectWalk() ? " §8(§bdirect§8)" : ""));
-      lines.add(String.format(Locale.ROOT,
-                              "§7search_ms: §f%.2f §8| §7smoothing_ms: §f%.2f",
-                              telemetry.getSearchMs(),
-                              telemetry.getSmoothingMs()));
-      lines.add("§7expanded: §f" + telemetry.getExpandedNodes() + " §8| §7open_peak: §f" + telemetry.getOpenSetPeak());
-      lines.add("§7path_len: §f" + telemetry.getPathLength() + " §8| §7smooth_len: §f" + telemetry.getSmoothedPathLength());
-      lines.add("§7failure: §f" + failure);
+      lines.add("§8» §7Status: " + status + (telemetry.isDirectWalk() ? " §8(§bdirect§8)" : ""));
+      lines.add(String.format(Locale.ROOT, "§8» §7Time: §f%.1fms §8(§7smooth: §f%.1fms§8)", telemetry.getSearchMs(), telemetry.getSmoothingMs()));
+      lines.add("§8» §7Nodes: §f" + telemetry.getExpandedNodes() + " §8(§7peak: §f" + telemetry.getOpenSetPeak() + "§8)");
+      lines.add("§8» §7Length: §f" + telemetry.getPathLength() + " §8(§7smooth: §f" + telemetry.getSmoothedPathLength() + "§8)");
+      if (!telemetry.isSuccess()) {
+          lines.add("§8» §7Error: §f" + failure);
+      }
    }
 }

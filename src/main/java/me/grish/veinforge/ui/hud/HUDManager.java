@@ -8,7 +8,6 @@ import me.grish.veinforge.ui.hud.elements.CommissionHUD;
 import me.grish.veinforge.ui.hud.elements.DebugHUD;
 import me.grish.veinforge.ui.hud.elements.FishingHUD;
 import me.grish.veinforge.ui.hud.elements.GlacialCommissionHUD;
-import me.grish.veinforge.ui.hud.elements.InventoryHUD;
 import me.grish.veinforge.ui.hud.elements.PathfinderStatsHUD;
 import me.grish.veinforge.ui.hud.elements.RouteBuilderHUD;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -36,7 +35,6 @@ public class HUDManager {
       elements.add(DebugHUD.getInstance());
       elements.add(GlacialCommissionHUD.getInstance());
       elements.add(RouteBuilderHUD.getInstance());
-      elements.add(InventoryHUD.getInstance());
       elements.add(PathfinderStatsHUD.getInstance());
       elements.add(FishingHUD.getInstance());
    }
@@ -80,7 +78,6 @@ public class HUDManager {
       if (element instanceof GlacialCommissionHUD) return hud.enableGlacialHud;
       if (element instanceof DebugHUD) return hud.enableDebugHud;
       if (element instanceof RouteBuilderHUD) return hud.enableRouteBuilderHud;
-      if (element instanceof InventoryHUD) return hud.enableInventoryHud;
       if (element instanceof PathfinderStatsHUD) return hud.enablePathfinderStatsHud;
       if (element instanceof FishingHUD) return hud.enableFishingHud;
       return true;
@@ -93,7 +90,6 @@ public class HUDManager {
       updateElement(DebugHUD.getInstance(), hud.debugHUD);
       updateElement(GlacialCommissionHUD.getInstance(), hud.glacialHUD);
       updateElement(RouteBuilderHUD.getInstance(), hud.routeBuilderHUD);
-      updateElement(InventoryHUD.getInstance(), hud.inventoryHUD);
       updateElement(PathfinderStatsHUD.getInstance(), hud.pathfinderStatsHUD);
       updateElement(FishingHUD.getInstance(), hud.fishingHUD);
       positionsLoaded = true;
@@ -113,7 +109,6 @@ public class HUDManager {
       saveElement(DebugHUD.getInstance(), hud.debugHUD);
       saveElement(GlacialCommissionHUD.getInstance(), hud.glacialHUD);
       saveElement(RouteBuilderHUD.getInstance(), hud.routeBuilderHUD);
-      saveElement(InventoryHUD.getInstance(), hud.inventoryHUD);
       saveElement(PathfinderStatsHUD.getInstance(), hud.pathfinderStatsHUD);
       saveElement(FishingHUD.getInstance(), hud.fishingHUD);
 
@@ -142,11 +137,6 @@ public class HUDManager {
       RouteBuilderHUD.getInstance().setY(90);
       RouteBuilderHUD.getInstance().setAnchor(0);
       RouteBuilderHUD.getInstance().setScale(1.0f);
-
-      InventoryHUD.getInstance().setX(10);
-      InventoryHUD.getInstance().setY(10);
-      InventoryHUD.getInstance().setAnchor(0);
-      InventoryHUD.getInstance().setScale(1.0f);
 
       PathfinderStatsHUD.getInstance().setX(5);
       PathfinderStatsHUD.getInstance().setY(140);

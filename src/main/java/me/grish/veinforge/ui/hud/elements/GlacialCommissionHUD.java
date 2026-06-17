@@ -2,11 +2,11 @@ package me.grish.veinforge.ui.hud.elements;
 
 import lombok.Getter;
 import me.grish.veinforge.VeinForge;
-import me.grish.veinforge.VeinForgeClient;
 import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.handler.GameStateHandler;
 import me.grish.veinforge.macro.impl.GlacialMacro.GlacialMacro;
 import me.grish.veinforge.macro.impl.GlacialMacro.GlaciteVeins;
+import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.util.TablistUtil;
 import me.grish.veinforge.util.helper.location.SubLocation;
 
@@ -17,7 +17,11 @@ public class GlacialCommissionHUD extends TextHud {
 
    @Getter
    private static final GlacialCommissionHUD instance = new GlacialCommissionHUD();
-   private final transient GlacialMacro glacialMacro = GlacialMacro.getInstance();
+    private final transient GlacialMacro glacialMacro = GlacialMacro.getInstance();
+
+   public static GlacialCommissionHUD getInstance() {
+      return instance;
+   }
 
    public GlacialCommissionHUD() {
       super();
@@ -27,7 +31,7 @@ public class GlacialCommissionHUD extends TextHud {
 
    @Override
    protected int getAccentColor() {
-      return 0xFF38BDF8;
+      return ColorPalette.SKY_400;
    }
 
    @Override
@@ -51,50 +55,40 @@ public class GlacialCommissionHUD extends TextHud {
          commsPerHour = (int) ((float) totalComms / uptime * 3600);
       }
 
-      lines.add("§b§lGlacial Commission Macro");
+      lines.add("§b§lGLACIAL COMMISSION");
       lines.add("§8§m------------------------");
-      lines.add("§8» §7Runtime: §b" + formatElapsedTime(uptime));
-      lines.add("§8» §7Commissions completed: §a" + totalComms);
-      lines.add("§8» §7Commissions/hour: §3" + commsPerHour);
-      lines.add("§8» §7HOTM XP gained: §d" + formatNumberWithK(hotmExpGained));
-      lines.add("§8» §7HOTM XP/hour: §d" + formatNumberWithK((long) commsPerHour * 900));
-      lines.add("§8§m------------------------");
+      lines.add("§8» §7Status: " + (glacialMacro.isEnabled() ? "§aRUNNING" : "§cPAUSED") + " §8(§b" + formatElapsedTime(uptime) + "§8)");
+      lines.add("§8» §7Comms: §f" + totalComms + " §8(§3" + commsPerHour + "/h§8)");
+      lines.add("§8» §7HOTM XP: §d" + formatNumberWithK(hotmExpGained) + " §8(§d" + formatNumberWithK((long) commsPerHour * 900) + "/h§8)");
 
       if (example) {
-         lines.add("§8» §7Status: §eMining");
-         lines.add("§8» §7Commission Info:");
-         lines.add("   §f- §bGLACITE: §a3/7 §7(§e42.8%§7)");
-         lines.add("   §f- §bUMBER: §a5/9 §7(§e61.2%§7)");
-         String version = VeinForgeClient.instance != null ? VeinForgeClient.instance.VERSION : "unknown";
-         lines.add("§8VeinForge §7v" + version);
+         lines.add("§8§m------------------------");
+         lines.add("§8» §7Mining: §eUmber");
+         lines.add("§8» §bGLACITE: §a3/7 §8(§f42%§8)");
+         lines.add("§8» §bUMBER: §a5/9 §8(§f61%§8)");
          return;
       }
 
       if (glacialMacro.isEnabled() && glacialMacro.getCurrentState() != null) {
-         lines.add("§8» §7Status: §e" + glacialMacro.getCurrentState().getClass().getSimpleName());
+         lines.add("§8§m------------------------");
+         lines.add("§8» §7State: §e" + glacialMacro.getCurrentState().getClass().getSimpleName().replace("State", ""));
 
          Map<GlaciteVeins, Double> commPercentages = TablistUtil.getGlaciteComs();
          List<GlaciteVeins> typesToMine = glacialMacro.getTypeToMine();
 
          if (!typesToMine.isEmpty()) {
-            lines.add("§8» §7Commission Info:");
             for (GlaciteVeins veinType : typesToMine) {
                double percentage = commPercentages.getOrDefault(veinType, 0.0);
-
-               // Calculate available (non-blacklisted) veins
                int totalVeins = GlaciteVeins.getVeins(veinType).length;
                long blacklistedCount = glacialMacro.getPreviousVeins().keySet().stream()
                                                .filter(pair -> pair.first() == veinType)
                                                .count();
                long availableCount = totalVeins - blacklistedCount;
 
-               String line = String.format("   §f- §b%s: §a%d/%d §7(§e%.1f%%§7)", veinType.toString(), availableCount, totalVeins, percentage);
-               lines.add(line);
+               lines.add(String.format("§8» §b%s: §a%d/%d §8(§f%.0f%%§8)", veinType.toString(), availableCount, totalVeins, percentage));
             }
          }
       }
-      String version = VeinForgeClient.instance != null ? VeinForgeClient.instance.VERSION : "unknown";
-      lines.add("§8VeinForge §7v" + version);
    }
 
    private String formatNumberWithK(long number) {

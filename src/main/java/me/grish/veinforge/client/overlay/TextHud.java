@@ -1,5 +1,6 @@
 package me.grish.veinforge.client.overlay;
 
+import me.grish.veinforge.ui.hud.ColorPalette;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -11,22 +12,13 @@ import java.util.List;
 
 public abstract class TextHud extends AbstractHUDElement {
 
-   private static final int PADDING_PX = 4;
-   private static final int LINE_SPACING_PX = 1;
-   private static final int SHADOW_OFFSET_PX = 0; // Removed shadow offset
-   private static final int ACCENT_WIDTH_PX = 2;
+   private static final int PADDING_PX = 6;
+   private static final int LINE_SPACING_PX = 2;
+   private static final int ACCENT_WIDTH_PX = 3;
    private static final int MAX_PANEL_WIDTH_PX = 320;
-   private static final int MIN_PANEL_WIDTH_PX = 116;
-   private static final int PANEL_CORNER_RADIUS_PX = 5;
+   private static final int MIN_PANEL_WIDTH_PX = 120;
+   private static final int PANEL_CORNER_RADIUS_PX = 4;
    private static final int SAFE_MARGIN_PX = 4;
-
-   private static final int COLOR_SHADOW = 0x00000000; // Transparent shadow
-   private static final int COLOR_BG_OUTER = 0x800A1118; // More transparent
-   private static final int COLOR_BG_INNER = 0x90131D27; // More transparent
-   private static final int COLOR_BG_TOP = 0x10FFFFFF; // Fainter gradient
-   private static final int COLOR_BG_BOTTOM = 0x10000000; // Fainter gradient
-   private static final int COLOR_BORDER = 0x40FFFFFF; // Fainter border
-   private static final int COLOR_TEXT_MAIN = 0xF2FFFFFF;
 
    public TextHud() {
       super();
@@ -292,17 +284,32 @@ public abstract class TextHud extends AbstractHUDElement {
    }
 
     private void drawPanelChrome(GuiGraphicsExtractor context, int panelX, int panelY, int panelW, int panelH) {
-      // context.fill(panelX + SHADOW_OFFSET_PX, panelY + SHADOW_OFFSET_PX, panelX + panelW + SHADOW_OFFSET_PX, panelY + panelH + SHADOW_OFFSET_PX, COLOR_SHADOW);
+      // Background with vertical gradient
+      fillRoundedRectGradient(context, panelX, panelY, panelX + panelW, panelY + panelH, PANEL_CORNER_RADIUS_PX, ColorPalette.BG_DARK, ColorPalette.BG_MEDIUM);
 
-      fillRoundedRect(context, panelX, panelY, panelX + panelW, panelY + panelH, PANEL_CORNER_RADIUS_PX, COLOR_BG_OUTER);
-      fillRoundedRect(context, panelX + 1, panelY + 1, panelX + panelW - 1, panelY + panelH - 1, PANEL_CORNER_RADIUS_PX - 1, COLOR_BG_INNER);
+      // Top accent bar
+      fillRoundedRect(context, panelX, panelY, panelX + panelW, panelY + ACCENT_WIDTH_PX, 1, getAccentColor());
 
-      fillRoundedRect(context, panelX + 2, panelY + 2, panelX + panelW - 2, panelY + 4, PANEL_CORNER_RADIUS_PX - 2, COLOR_BG_TOP);
-      fillRoundedRect(context, panelX + 2, panelY + panelH - 3, panelX + panelW - 2, panelY + panelH - 2, PANEL_CORNER_RADIUS_PX - 2, COLOR_BG_BOTTOM);
+      // Subtle border
+      drawRoundedOutline(context, panelX, panelY, panelX + panelW, panelY + panelH, PANEL_CORNER_RADIUS_PX, ColorPalette.BORDER_LIGHT);
+   }
 
-      fillRoundedRect(context, panelX, panelY + 1, panelX + ACCENT_WIDTH_PX, panelY + panelH - 1, 1, getAccentColor());
-      fillRoundedRect(context, panelX + ACCENT_WIDTH_PX, panelY + 1, panelX + ACCENT_WIDTH_PX + 1, panelY + panelH - 1, 1, 0x1AFFFFFF); // Fainter accent border
-      drawRoundedOutline(context, panelX, panelY, panelX + panelW, panelY + panelH, PANEL_CORNER_RADIUS_PX, COLOR_BORDER);
+   protected void drawProgressBar(GuiGraphicsExtractor context, int x, int y, int width, int height, float progress, int color) {
+      // Background
+      context.fill(x, y, x + width, y + height, 0x40000000);
+      // Fill
+      int fillWidth = (int) (width * Math.min(1.0f, Math.max(0.0f, progress)));
+      if (fillWidth > 0) {
+         context.fill(x, y, x + fillWidth, y + height, color);
+      }
+      // Outline
+      context.outline(x, y, width, height, 0x40FFFFFF);
+   }
+
+   private void fillRoundedRectGradient(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int radius, int colorTop, int colorBottom) {
+      fillRoundedRect(context, x1, y1, x2, y2, radius, colorTop); // Fallback to solid if gradient isn't trivial
+      // For actual gradient we'd need more complex vertex work, but for now we'll use a layered approach
+      context.fillGradient(x1, y1, x2, y2, colorTop, colorBottom);
    }
 
    private float fitScaleToScreen(int basePanelW, int basePanelH, float preferredScale) {
@@ -348,7 +355,7 @@ public abstract class TextHud extends AbstractHUDElement {
       int lineStep = mc.font.lineHeight + getLineSpacingPx();
 
       int maxWidth = computeMaxLineWidth(lines);
-      int contentHeight = computeContentHeight(lines);
+      int contentHeight = computeContentHeight(lines) + getExtraHeight();
 
       int basePanelW = Math.max(MIN_PANEL_WIDTH_PX, maxWidth + (padding * 2));
       int basePanelH = contentHeight + (padding * 2);
@@ -365,9 +372,18 @@ public abstract class TextHud extends AbstractHUDElement {
       drawPanelChrome(context, 0, 0, basePanelW, basePanelH);
 
       int renderX = padding;
-      int renderY = padding;
+      int renderY = padding + ACCENT_WIDTH_PX; // Start below the accent bar
 
       int currentY = renderY;
+      renderLines(context, lines, renderX, currentY, lineStep, padding, basePanelW);
+
+      postRender(context, basePanelW, basePanelH, scale);
+
+      context.pose().popMatrix();
+   }
+
+   protected void renderLines(GuiGraphicsExtractor context, List<String> lines, int renderX, int startY, int lineStep, int padding, int basePanelW) {
+      int currentY = startY;
       boolean firstTextLine = true;
       for (int i = 0; i < lines.size(); i++) {
          String line = lines.get(i);
@@ -378,39 +394,44 @@ public abstract class TextHud extends AbstractHUDElement {
          }
 
          if (isDividerLine(line)) {
-             int separatorY = currentY + (mc.font.lineHeight / 2);
-             context.fill(padding, separatorY, basePanelW - padding, separatorY + 1, 0x3FFFFFFF);
-             currentY += lineStep;
-             continue;
-          }
+            int separatorY = currentY + (mc.font.lineHeight / 2);
+            context.fill(padding, separatorY, basePanelW - padding, separatorY + 1, 0x2FFFFFFF);
+            currentY += lineStep;
+            continue;
+         }
 
-          if (firstTextLine) {
-             Component titleComponent = componentWithHudFont(line);
-             context.text(mc.font, titleComponent, renderX, currentY, getAccentColor(), false);
+         if (firstTextLine) {
+            Component titleComponent = componentWithHudFont(line);
+            context.text(mc.font, titleComponent, renderX, currentY, 0xFFFFFFFF, true);
 
-             if (i + 1 < lines.size()) {
-                int sepY = currentY + mc.font.lineHeight + 2;
-                context.fill(padding, sepY, basePanelW - padding, sepY + 1, 0x3EFFFFFF);
-             }
-             firstTextLine = false;
-             currentY += lineStep;
-             continue;
-          }
+            int sepY = currentY + mc.font.lineHeight + 2;
+            context.fill(padding, sepY, basePanelW - padding, sepY + 1, 0x4FFFFFFF);
 
-          context.text(mc.font, componentWithHudFont(line), renderX, currentY, COLOR_TEXT_MAIN, false);
-          currentY += lineStep;
+            firstTextLine = false;
+            currentY += lineStep + 2;
+            continue;
+         }
+
+         context.text(mc.font, componentWithHudFont(line), renderX, currentY, 0xFFE2E8F0, true);
+         currentY += lineStep;
       }
+   }
 
-      context.pose().popMatrix();
+   protected void postRender(GuiGraphicsExtractor context, int panelW, int panelH, float scale) {
+      // Hook for sub-classes
+   }
+
+   protected int getExtraHeight() {
+      return 0;
    }
 
    @Override
-    public void render(GuiGraphicsExtractor context, float tickDelta) {
+   public void render(GuiGraphicsExtractor context, float tickDelta) {
       renderInternal(context, tickDelta, false, false);
    }
 
    @Override
-    public void renderForEditor(GuiGraphicsExtractor context, float tickDelta) {
+   public void renderForEditor(GuiGraphicsExtractor context, float tickDelta) {
       renderInternal(context, tickDelta, true, true);
    }
 
@@ -438,7 +459,7 @@ public abstract class TextHud extends AbstractHUDElement {
       }
 
       int baseWidth = Math.max(MIN_PANEL_WIDTH_PX, computeMaxLineWidth(lines) + (getPaddingPx() * 2));
-      int baseHeight = computeContentHeight(lines) + (getPaddingPx() * 2);
+      int baseHeight = computeContentHeight(lines) + getExtraHeight() + (getPaddingPx() * 2);
       float scale = fitScaleToScreen(baseWidth, baseHeight, preferredScale);
       return Math.max(1, Math.round(baseWidth * scale));
    }
@@ -463,7 +484,7 @@ public abstract class TextHud extends AbstractHUDElement {
       }
 
       int baseWidth = Math.max(MIN_PANEL_WIDTH_PX, computeMaxLineWidth(lines) + (getPaddingPx() * 2));
-      int baseHeight = computeContentHeight(lines) + (getPaddingPx() * 2);
+      int baseHeight = computeContentHeight(lines) + getExtraHeight() + (getPaddingPx() * 2);
       float scale = fitScaleToScreen(baseWidth, baseHeight, preferredScale);
       return Math.max(1, Math.round(baseHeight * scale));
    }

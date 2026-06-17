@@ -7,9 +7,11 @@ import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.handler.GameStateHandler;
 import me.grish.veinforge.macro.impl.CommissionMacro.CommissionMacro;
 import me.grish.veinforge.macro.impl.CommissionMacro.states.CommissionMacroState;
+import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.util.helper.location.Location;
 import me.grish.veinforge.util.tablist.TabListParser;
 import me.grish.veinforge.util.tablist.WidgetType;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.List;
 
@@ -17,8 +19,13 @@ public class CommissionHUD extends TextHud {
 
    @Getter
    private final static CommissionHUD instance = new CommissionHUD();
+
+   public static CommissionHUD getInstance() {
+      return instance;
+   }
    private final transient CommissionMacro commissionMacro = CommissionMacro.getInstance();
    public boolean commHudResetStats = false;
+   private float currentProgress = 0.0f;
 
    public CommissionHUD() {
       super();
@@ -28,7 +35,21 @@ public class CommissionHUD extends TextHud {
 
    @Override
    protected int getAccentColor() {
-      return 0xFF22D3EE;
+      return ColorPalette.CYAN_400;
+   }
+
+   @Override
+   protected int getExtraHeight() {
+      return commissionMacro.isEnabled() ? 10 : 0;
+   }
+
+   @Override
+   protected void postRender(GuiGraphicsExtractor context, int panelW, int panelH, float scale) {
+      if (!commissionMacro.isEnabled() || currentProgress <= 0) return;
+
+      int padding = getPaddingPx();
+      int barY = panelH - padding - 8;
+      drawProgressBar(context, padding, barY, panelW - padding * 2, 4, currentProgress, getAccentColor());
    }
 
    @Override
@@ -49,6 +70,7 @@ public class CommissionHUD extends TextHud {
          currentCommissionName = "Mithril Miner";
          lastCompleteAtMs = nowMs - 75_000L;
          currentState = null;
+         currentProgress = 0.65f;
       } else {
          uptime = commissionMacro.uptime.getTimePassed() / 1000;
          totalComms = commissionMacro.getActualCommissionCounter();
@@ -76,38 +98,45 @@ public class CommissionHUD extends TextHud {
       long elapsedSinceLast = lastCompleteAtMs > 0L ? (nowMs - lastCompleteAtMs) / 1000L : 0L;
       boolean recentlyCompleted = isRunning && lastCompleteAtMs > 0L && (nowMs - lastCompleteAtMs) <= 5_000L;
 
+      if (!example) {
+          if (isRunning && avgSecondsPerComm > 0) {
+              currentProgress = (float) Math.min(1.0, Math.max(0.0, (double) elapsedSinceLast / (double) avgSecondsPerComm));
+          } else {
+              currentProgress = 0;
+          }
+      }
+
       String statusLabel;
       if (!isRunning) {
-         statusLabel = "Paused";
+         statusLabel = "PAUSED";
       } else if (recentlyCompleted) {
-         statusLabel = "Complete";
+         statusLabel = "COMPLETE";
       } else {
-         statusLabel = "Running";
+         statusLabel = "RUNNING";
       }
       String stateLabel = isRunning ? getStateLabel(currentState) : null;
 
-      lines.add("§b§lDwarven Commission Macro");
+      lines.add("§b§lDWARVEN COMMISSION");
       lines.add("§8§m------------------------");
 
       String runtimeStr = formatElapsedTime(uptime);
-      lines.add("§8» §7" + (isRunning ? "§a" : "§c") + statusLabel + " §8(§b" + runtimeStr + "§8)" + (stateLabel != null ? " §8- §e" + stateLabel : ""));
+      String statusColor = isRunning ? "§a" : "§c";
+      lines.add("§8» §7Status: " + statusColor + statusLabel + " §8(§b" + runtimeStr + "§8)");
+      if (stateLabel != null) {
+          lines.add("§8» §7State: §e" + stateLabel);
+      }
 
-      lines.add("§8» §7Comms: §a" + totalComms + " §8(§3" + commsPerHour + "/h§8)");
-      lines.add("§8» §7XP: §d" + formatNumberWithK(hotmExpGained) + " §8(§d" + formatNumberWithK(hotmXpPerHour) + "/h§8)");
+      lines.add("§8» §7Comms: §f" + totalComms + " §8(§3" + commsPerHour + "/h§8)");
+      lines.add("§8» §7HOTM XP: §d" + formatNumberWithK(hotmExpGained) + " §8(§d" + formatNumberWithK(hotmXpPerHour) + "/h§8)");
+
+      if (isRunning) {
+         lines.add("§8» §7Current: §b" + (currentCommissionName != null ? currentCommissionName : "Unknown"));
+      }
 
       if (isRunning && avgSecondsPerComm > 0) {
-         double progressRatio = Math.min(1.0, Math.max(0.0, (double) elapsedSinceLast / (double) avgSecondsPerComm));
-         int progressPercent = (int) Math.round(progressRatio * 100.0);
-         long etaSeconds = Math.max(0L, avgSecondsPerComm - elapsedSinceLast);
-         lines.add("§8» §7Prog: §e" + progressPercent + "% §8(ETA: §f" + formatElapsedTime(etaSeconds) + "§8)");
-         lines.add("§8» §7Avg: §f" + formatElapsedTime(avgSecondsPerComm) + " §8| §7Last: §f" + formatElapsedTime(elapsedSinceLast));
+         lines.add("§8§m------------------------");
+         lines.add("§8» §7Avg: §f" + formatElapsedTime(avgSecondsPerComm) + " §8| §7ETA: §f" + formatElapsedTime(Math.max(0L, avgSecondsPerComm - elapsedSinceLast)));
       }
-      if (isRunning) {
-         lines.add("§8» §7Now: §b" + (currentCommissionName != null ? currentCommissionName : "Unknown"));
-      }
-      String version = VeinForgeClient.instance != null ? VeinForgeClient.instance.VERSION : "unknown";
-      lines.add("§8§m------------------------");
-      lines.add("§8VeinForge §7v" + version);
    }
 
    private String formatNumberWithK(long number) {

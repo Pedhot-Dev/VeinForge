@@ -9,6 +9,7 @@ import me.grish.veinforge.macro.impl.CommissionMacro.CommissionMacro;
 import me.grish.veinforge.macro.impl.GlacialMacro.GlacialMacro;
 import me.grish.veinforge.macro.impl.PowderMacro.PowderMacro;
 import me.grish.veinforge.macro.impl.RouteMiner.RouteMinerMacro;
+import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.util.ScoreboardUtil;
 
 import java.util.List;
@@ -18,6 +19,10 @@ public class DebugHUD extends TextHud {
    @Getter
    private final static DebugHUD instance = new DebugHUD();
 
+   public static DebugHUD getInstance() {
+      return instance;
+   }
+
    public DebugHUD() {
       super();
       this.x = 1;
@@ -26,36 +31,42 @@ public class DebugHUD extends TextHud {
    }
 
    @Override
+   protected int getAccentColor() {
+      return 0xFF94A3B8; // Slate 400
+   }
+
+   @Override
    protected void getLines(List<String> lines, boolean example) {
 
       if (example) {
-         lines.add("§f§lDebug");
-         lines.add("§7Macro §fCommission Macro §8(§aRUN §8/ §fMiningState§8) §8| §7Failsafe §fOK");
-         lines.add("§7FPS §f165 §8| §7Ping §f23ms");
-         lines.add("§7Location §fDwarven Mines §8| §7Sub §fRoyal Mines");
-         lines.add("§7Yaw/Pitch §f123.4 §8/ §f-12.3");
-         lines.add("§7Scoreboard §fCommission Tracker");
+         lines.add("§f§lDEBUG CONSOLE");
+         lines.add("§8§m------------------------");
+         lines.add("§8» §7Macro: §fCommission §8(§aRUN§8)");
+         lines.add("§8» §7State: §fMiningState");
+         lines.add("§8» §7System: §f165 FPS §8| §f23ms");
+         lines.add("§8» §7Pos: §f123, 70, 456");
          return;
       }
 
-      lines.add("§f§lDebug");
+      lines.add("§f§lDEBUG CONSOLE");
+      lines.add("§8§m------------------------");
       if (mc.player == null) {
-         lines.add("§7No player");
+         lines.add("§8» §cPlayer not found");
          return;
       }
 
-      lines.add(getMacroFailsafeLine());
-
-      lines.add("§7FPS §f" + mc.getFps() + " §8| §7Focus §f" + mc.isWindowActive());
-      lines.add("§7Yaw/Pitch §f" + String.format("%.1f", mc.player.getYRot()) + " §8/ §f" + String.format("%.1f", mc.player.getXRot()));
+      getMacroFailsafeLine(lines);
+      lines.add("§8» §7System: §f" + mc.getFps() + " FPS §8| §f" + (mc.isWindowActive() ? "§aFocused" : "§cBackground"));
+      lines.add("§8» §7Pos: §f" + mc.player.getBlockX() + ", " + mc.player.getBlockY() + ", " + mc.player.getBlockZ());
+      lines.add("§8» §7Rot: §f" + String.format("%.1f", mc.player.getYRot()) + " / " + String.format("%.1f", mc.player.getXRot()));
 
       String title = ScoreboardUtil.getScoreboardTitle();
       if (title != null && !title.isEmpty()) {
-         lines.add("§7Scoreboard §f" + title);
+         lines.add("§8» §7Score: §f" + title);
       }
    }
 
-   private String getMacroFailsafeLine() {
+   private void getMacroFailsafeLine(List<String> lines) {
       MacroManager mm = MacroManager.getInstance();
       AbstractMacro active = mm.getActiveMacro();
       AbstractMacro selected = mm.getCurrentMacro();
@@ -78,14 +89,14 @@ public class DebugHUD extends TextHud {
       FailsafeManager fm = FailsafeManager.getInstance();
       String failsafeLabel;
       if (fm.triggeredFailsafe.isPresent()) {
-         failsafeLabel = "§cTRIG " + fm.triggeredFailsafe.get().getFailsafeType();
-      } else if (!fm.emergencyQueue.isEmpty()) {
-         failsafeLabel = "§eQ " + fm.emergencyQueue.size();
+         failsafeLabel = "§cTRIG";
       } else {
          failsafeLabel = "§aOK";
       }
 
-      return "§7Macro §f" + macroName + " §8(" + runLabel + " §8/ §f" + stateLabel + "§8) §8| §7Failsafe " + failsafeLabel;
+      lines.add("§8» §7Macro: §f" + macroName + " §8(" + runLabel + "§8)");
+      lines.add("§8» §7State: §f" + stateLabel);
+      lines.add("§8» §7Failsafe: " + failsafeLabel);
    }
 
    private String getMacroStateLabel(AbstractMacro macro) {
