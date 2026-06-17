@@ -51,8 +51,8 @@ public abstract class TextHud extends AbstractHUDElement {
          return Style.EMPTY;
       }
 
-
-      if (code.isColor()) {
+      // isColor was  removed
+      if (code != ChatFormatting.BOLD && code != ChatFormatting.ITALIC && code != ChatFormatting.UNDERLINE && code != ChatFormatting.STRIKETHROUGH && code != ChatFormatting.OBFUSCATED && code != ChatFormatting.RESET) {
          return Style.EMPTY
                         .withColor(code)
                         .withBold(false)

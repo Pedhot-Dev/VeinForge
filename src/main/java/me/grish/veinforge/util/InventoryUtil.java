@@ -232,11 +232,12 @@ public class InventoryUtil {
          actionType = net.minecraft.world.inventory.ContainerInput.SWAP;
       }
 
-      mc.gameMode.handleInventoryMouseClick(
+      mc.gameMode.handleContainerInput(
               containerId,
               slot,
               mouseButton,
-              actionType
+              actionType,
+              mc.player
       );
    }
 
@@ -250,7 +251,7 @@ public class InventoryUtil {
          return;
       }
 
-      mc.gameMode.handleInventoryMouseClick(
+      mc.gameMode.handleContainerInput(
               containerId,
               slot,
               hotbarSlot,
@@ -295,7 +296,6 @@ public class InventoryUtil {
       if (mc.gui.screen() != null && mc.player != null) {
          // CRITICAL: Release all keys BEFORE closing container
          // This prevents key state desync between GUI open/close cycles
-         // See: 1.21.1 no longer auto-clears keys on screen transitions like 1.8.9 did
          KeyBindUtil.releaseAllExcept();
 
          // Get the container sync ID before closing

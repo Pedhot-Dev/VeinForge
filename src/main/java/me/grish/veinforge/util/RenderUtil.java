@@ -490,8 +490,49 @@ public final class RenderUtil {
     * Render a billboarded text label in the world. This method retains the original scaling behaviour.
     */
     public static void drawText(String text, double x, double y, double z, float scale) {
-      // TODO: Reimplement for MC 26.2 - world-space text rendering pipeline changed
-    }
+       if (mc.level == null || mc.player == null || text == null || text.isEmpty()) {
+          return;
+       }
+       if (activePoseStack == null || activeNodeCollector == null) {
+          return;
+       }
+
+       Font font = mc.font;
+       int textWidth = font.width(text);
+
+       activePoseStack.pushPose();
+
+       // Translate to world position (already camera-relative from beginWorldRender)
+       activePoseStack.translate(x, y, z);
+
+       // Billboard: face the camera by applying camera rotation
+       activePoseStack.mulPose(mc.gameRenderer.mainCamera().rotation());
+
+       // Scale from world-space to text-space; negative X mirrors text so it reads correctly
+       float textScale = scale * 0.025f;
+       activePoseStack.scale(-textScale, -textScale, textScale);
+
+       // Centre the text at the origin
+       float textX = -textWidth / 2.0f;
+       float textY = -(font.lineHeight / 2.0f);
+
+       net.minecraft.util.FormattedCharSequence orderedText =
+               net.minecraft.network.chat.Component.literal(text).getVisualOrderText();
+
+       activeNodeCollector.submitText(
+               activePoseStack,
+               textX, textY,
+               orderedText,
+               false,                        // shadow
+               Font.DisplayMode.SEE_THROUGH, // visible through blocks
+               0xFFFFFFFF,                   // white text
+               0x40000000,                   // semi-transparent background
+               0xF000F0,                     // full brightness (packed lightmap)
+               0                             // sort order
+       );
+
+       activePoseStack.popPose();
+     }
 
    private static void addFilledBoxVertices(VertexConsumer buffer, PoseStack.Pose entry, AABB box, int r, int g, int b, int a) {
       double minX = box.minX;
