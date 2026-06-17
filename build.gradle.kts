@@ -110,7 +110,9 @@ tasks.shadowJar {
     configurations = listOf(shadowModImpl)
     archiveClassifier.set("shadow")
     destinationDirectory.set(layout.buildDirectory.dir("badjars"))
-    relocate("io.github.notenoughupdates.moulconfig", "me.grish.veinforge.deps.moulconfig")
+    // relocate removed: shadow relocate only transforms the shadowed dependency classes,
+    // not references in the mod's own source. The original package name is used everywhere
+    // in the codebase, so relocating causes NoClassDefFoundError at runtime.
     mergeServiceFiles()
 }
 
