@@ -43,7 +43,7 @@ public class ItemChangeFailsafe extends AbstractFailsafe {
 
    @Override
    public boolean onTick() {
-      if (mc.screen instanceof AbstractContainerScreen) {
+      if (mc.gui.screen() instanceof AbstractContainerScreen) {
          if (!this.removedItems.isEmpty() || this.timer.isScheduled()) {
             resetStates();
          }
@@ -74,7 +74,7 @@ public class ItemChangeFailsafe extends AbstractFailsafe {
 
    @Override
    public boolean onPacketReceive(Packet<?> packet) {
-      if (mc.screen instanceof AbstractContainerScreen) {
+      if (mc.gui.screen() instanceof AbstractContainerScreen) {
          if (!this.removedItems.isEmpty() || this.timer.isScheduled()) {
             resetStates();
          }

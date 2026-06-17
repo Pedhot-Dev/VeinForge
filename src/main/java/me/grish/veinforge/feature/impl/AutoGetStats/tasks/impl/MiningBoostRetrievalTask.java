@@ -25,7 +25,7 @@ public class MiningBoostRetrievalTask extends AbstractInventoryTask<Integer> {
 
       InventoryUtil.holdItem(VeinForge.config().general.miningTool);
 
-      if (mc.screen != null) {
+      if (mc.gui.screen() != null) {
          InventoryUtil.closeScreen();
       }
 

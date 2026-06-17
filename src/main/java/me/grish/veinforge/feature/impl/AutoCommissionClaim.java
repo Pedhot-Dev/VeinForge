@@ -212,7 +212,7 @@ public class AutoCommissionClaim extends AbstractFeature {
                   // Always attempt direct interaction with the selected emissary.
                   // Relying on hitResult/entityLookingAt can stall if crosshair state is stale.
                   if (mc.gameMode != null) {
-                     mc.gameMode.interact(mc.player, emissaryEntity, net.minecraft.world.InteractionHand.MAIN_HAND);
+                     mc.gameMode.interact(mc.player, emissaryEntity, new net.minecraft.world.phys.EntityHitResult(emissaryEntity), net.minecraft.world.InteractionHand.MAIN_HAND);
                   } else {
                      KeyBindUtil.rightClick();
                   }

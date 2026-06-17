@@ -279,7 +279,7 @@ public class PowderMacro extends AbstractMacro {
                   continue;
                }
 
-               double distance = mc.player.distanceToSqr(scanPos.getCenter());
+               double distance = mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(scanPos));
                if (distance < bestDistance) {
                   bestDistance = distance;
                   best = scanPos.immutable();

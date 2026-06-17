@@ -46,14 +46,14 @@ public class ProfileFailsafe extends AbstractFailsafe {
 
    @Override
    public boolean react() {
-      if (mc.screen != null && mc.player != null) {
+      if (mc.gui.screen() != null && mc.player != null) {
          mc.execute(() -> {
-            if (mc.screen != null && mc.player != null) {
+            if (mc.gui.screen() != null && mc.player != null) {
                // Get the container sync ID before closing
                int syncId = mc.player.containerMenu.containerId;
 
                // Close the screen on client side
-               mc.setScreen(null);
+               mc.gui.setScreen(null);
 
                // Tell the server to close the container
                // This prevents desync between client and server container states

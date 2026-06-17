@@ -31,8 +31,8 @@ public class KnockbackFailsafe extends AbstractFailsafe {
    @Override
    public boolean onPacketReceive(Packet<?> packet) {
       if (!(packet instanceof ClientboundSetEntityMotionPacket p)) return false;
-      if (p.getId() != mc.player.getId()) return false;
-      return p.getMovement().y >= VeinForge.config().failsafe.verticalKnockbackThreshold;
+      if (p.id() != mc.player.getId()) return false;
+      return p.movement().y >= VeinForge.config().failsafe.verticalKnockbackThreshold;
    }
 
    @Override

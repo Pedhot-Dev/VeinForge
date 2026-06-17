@@ -64,7 +64,7 @@ public class HUDEditorScreen extends Screen {
    }
 
    @Override
-   public void renderBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+   public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
       // Avoid vanilla blurred background here; calling blur more than once per frame throws.
       context.fill(0, 0, this.width, this.height, 0xB0000000);
 
@@ -91,7 +91,7 @@ public class HUDEditorScreen extends Screen {
    }
 
    @Override
-   public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+   public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
       List<AbstractHUDElement> elements = HUDManager.getInstance().getEditableElements();
       for (AbstractHUDElement element : elements) {
          int w = element.getEditorWidth();
@@ -330,7 +330,7 @@ public class HUDEditorScreen extends Screen {
    public void onClose() {
       saveHudLayout();
       if (parent != null) {
-         Minecraft.getInstance().setScreen(parent);
+         Minecraft.getInstance().gui.setScreen(this.parent);
          return;
       }
       super.onClose();

@@ -29,7 +29,7 @@ public class DisconnectFailsafe extends AbstractFailsafe {
 
    @Override
    public boolean onPacketReceive(Packet<?> packet) {
-      return packet instanceof ClientboundDisconnectPacket || mc.screen instanceof DisconnectedScreen;
+      return packet instanceof ClientboundDisconnectPacket || mc.gui.screen() instanceof DisconnectedScreen;
    }
 
    @Override

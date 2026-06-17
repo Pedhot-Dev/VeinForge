@@ -15,7 +15,7 @@ public class ConfigGuiManager {
 
    public static void openConfigGui(String search) {
       Minecraft client = Minecraft.getInstance();
-      client.setScreen(createConfigScreen(client.screen, search));
+      client.gui.setScreen(createConfigScreen(client.gui.screen(), search));
    }
 
    public static MoulConfigScreenComponent createConfigScreen(Screen parent) {

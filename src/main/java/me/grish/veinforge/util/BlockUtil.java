@@ -292,10 +292,10 @@ public class BlockUtil {
       }
 
       // Mithril variants
-      if (block == Blocks.GRAY_WOOL) {
+      if (block == Blocks.WOOL.gray()){
          return 500;
       }
-      if (block == Blocks.LIGHT_BLUE_WOOL) {
+      if (block == Blocks.WOOL.lightBlue()) {
          return 1500;
       }
       if (block == Blocks.PRISMARINE || block == Blocks.DARK_PRISMARINE || block == Blocks.PRISMARINE_BRICKS) {
@@ -313,26 +313,26 @@ public class BlockUtil {
       }
 
       // Gemstones (stained glass + panes)
-      if (block == Blocks.RED_STAINED_GLASS || block == Blocks.RED_STAINED_GLASS_PANE) {
+      if (block == Blocks.STAINED_GLASS.red() || block == Blocks.STAINED_GLASS_PANE.red()) {
          return 2300; // Ruby
       }
-      if (block == Blocks.WHITE_STAINED_GLASS || block == Blocks.WHITE_STAINED_GLASS_PANE
-                  || block == Blocks.LIGHT_BLUE_STAINED_GLASS || block == Blocks.LIGHT_BLUE_STAINED_GLASS_PANE
-                  || block == Blocks.PURPLE_STAINED_GLASS || block == Blocks.PURPLE_STAINED_GLASS_PANE
-                  || block == Blocks.YELLOW_STAINED_GLASS || block == Blocks.YELLOW_STAINED_GLASS_PANE
-                  || block == Blocks.LIME_STAINED_GLASS || block == Blocks.LIME_STAINED_GLASS_PANE) {
+      if (block == Blocks.STAINED_GLASS.white() || block == Blocks.STAINED_GLASS_PANE.white()
+                  || block == Blocks.STAINED_GLASS.lightBlue() || block == Blocks.STAINED_GLASS_PANE.lightBlue()
+                  || block == Blocks.STAINED_GLASS.purple() || block == Blocks.STAINED_GLASS_PANE.purple()
+                  || block == Blocks.STAINED_GLASS.yellow() || block == Blocks.STAINED_GLASS_PANE.yellow()
+                  || block == Blocks.STAINED_GLASS.lime() || block == Blocks.STAINED_GLASS_PANE.lime()) {
          return 3000; // Opal/Sapphire/Amethyst/Amber/Jade
       }
-      if (block == Blocks.ORANGE_STAINED_GLASS || block == Blocks.ORANGE_STAINED_GLASS_PANE) {
+      if (block == Blocks.STAINED_GLASS.orange() || block == Blocks.STAINED_GLASS_PANE.orange()) {
          return 3800; // Topaz
       }
-      if (block == Blocks.MAGENTA_STAINED_GLASS || block == Blocks.MAGENTA_STAINED_GLASS_PANE) {
+      if (block == Blocks.STAINED_GLASS.magenta() || block == Blocks.STAINED_GLASS_PANE.magenta()) {
          return 4800; // Jasper
       }
-      if (block == Blocks.BLACK_STAINED_GLASS || block == Blocks.BLACK_STAINED_GLASS_PANE
-                  || block == Blocks.CYAN_STAINED_GLASS || block == Blocks.CYAN_STAINED_GLASS_PANE
-                  || block == Blocks.BROWN_STAINED_GLASS || block == Blocks.BROWN_STAINED_GLASS_PANE
-                  || block == Blocks.GREEN_STAINED_GLASS || block == Blocks.GREEN_STAINED_GLASS_PANE) {
+      if (block == Blocks.STAINED_GLASS.black() || block == Blocks.STAINED_GLASS_PANE.black()
+                  || block == Blocks.STAINED_GLASS.cyan() || block == Blocks.STAINED_GLASS_PANE.cyan()
+                  || block == Blocks.STAINED_GLASS.brown() || block == Blocks.STAINED_GLASS_PANE.brown()
+                  || block == Blocks.STAINED_GLASS.green() || block == Blocks.STAINED_GLASS_PANE.green()) {
          return 5200; // Onyx/Aquamarine/Citrine/Peridot
       }
 

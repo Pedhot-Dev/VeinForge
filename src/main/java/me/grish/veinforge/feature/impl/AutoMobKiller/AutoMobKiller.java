@@ -152,7 +152,7 @@ public class AutoMobKiller extends AbstractFeature {
 
    @Override
    protected void onTick() {
-      if (mc.screen != null) {
+      if (mc.gui.screen() != null) {
          return;
       }
 

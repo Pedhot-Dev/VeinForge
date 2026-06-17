@@ -53,7 +53,7 @@ public class HUDManager {
    }
 
    public void onHudRender(GuiGraphicsExtractor context) {
-      if (VeinForge.mc().options.hideGui) return;
+      if (VeinForge.mc().gui.hud.isHidden()) return;
       ensurePositionsLoaded();
 
       for (AbstractHUDElement element : elements) {

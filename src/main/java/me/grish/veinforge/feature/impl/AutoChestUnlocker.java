@@ -99,7 +99,7 @@ public class AutoChestUnlocker extends AbstractFeature {
                this.changeState(State.ENDING, 0);
                break;
             }
-            chestQueue.sort(Comparator.comparingDouble(pos -> mc.player.distanceToSqr(pos.getCenter())));
+            chestQueue.sort(Comparator.comparingDouble(pos -> mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos))));
             this.chestSolving = chestQueue.remove(0);
             if (PlayerUtil.getPlayerEyePos().distanceTo(Vec3.atCenterOf(this.chestSolving)) > 4) {
                this.changeState(State.FINDING_WALKABLE_BLOCKS, 0);
@@ -119,7 +119,7 @@ public class AutoChestUnlocker extends AbstractFeature {
                   }
                }
             }
-            pos.sort(Comparator.comparingDouble(p -> mc.player.distanceToSqr(p.getCenter())));
+            pos.sort(Comparator.comparingDouble(p -> mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(p))));
             this.walkableBlocks = pos;
             this.changeState(State.WALKING, 0);
             log("Found block list size: " + pos.size());
@@ -252,7 +252,7 @@ public class AutoChestUnlocker extends AbstractFeature {
          return;
       }
       BlockPos eventPos = event.pos();
-      if (mc.player.distanceToSqr(eventPos.getCenter()) > 64) {
+      if (mc.player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(eventPos)) > 64) {
          return;
       }
       Block newBlock = event.newState().getBlock();

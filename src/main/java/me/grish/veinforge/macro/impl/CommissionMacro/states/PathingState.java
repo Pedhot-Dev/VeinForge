@@ -34,7 +34,7 @@ public class PathingState implements CommissionMacroState {
       log("Starting pathing state");
       startedNavigator = false;
 
-      if (Minecraft.getInstance().screen != null) {
+      if (Minecraft.getInstance().gui.screen() != null) {
          long now = System.currentTimeMillis();
          if (now - lastGuiWaitLogMs > 1000L) {
             log("GUI is open, delaying pathing until closed");
@@ -96,7 +96,7 @@ public class PathingState implements CommissionMacroState {
          return new WarpingState();
       }
 
-      if (Minecraft.getInstance().screen != null) {
+      if (Minecraft.getInstance().gui.screen() != null) {
          return this;
       }
 

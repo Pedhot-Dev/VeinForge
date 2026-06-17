@@ -72,13 +72,24 @@ public class EventManager {
       });
    }
 
+   // NOTE (Fabric 1.21+/26.2 migration):
+   // LevelRenderEvents.AFTER_ENTITIES no longer exists in this API version.
+   // The render pipeline was split into multiple explicit phases (opaque terrain,
+   // solid features, translucent features, overlays, etc.).
+   //
+   // This callback is now using AFTER_SOLID_FEATURES as the closest replacement
+   // for the old "after entities rendered in world" timing.
+   //the old "after entities rendered in world
+   // Behavior may not be identical to the previous event. The render pipeline is
+   // more granular now, so exact ordering relative to entities/translucency can differ.
+   // If visual glitches appear, this may need adjustment to a different phase
+   // such as AFTER_TRANSLUCENT_FEATURES or BEFORE_TRANSLUCENT_TERRAIN.
    private static void registerRenderEvents() {
-      // World rendering (replaces RenderWorldLastEvent)
-      LevelRenderEvents.AFTER_ENTITIES.register(context -> {
+      LevelRenderEvents.AFTER_SOLID_FEATURES.register(context -> {
          Minecraft mc = Minecraft.getInstance();
          if (mc.level == null || mc.player == null) return;
 
-         RenderUtil.beginWorldRender(context.matrices(), context.consumers());
+         RenderUtil.beginWorldRender(context);
          RotationHandler.getInstance().onWorldRender(context);
          RouteHandler.getInstance().onWorldRender(context);
          GraphHandler.instance.onWorldRender(context);
@@ -88,7 +99,7 @@ public class EventManager {
       });
 
       // HUD rendering (replaces RenderGameOverlayEvent)
-      HudElementRegistry.attachElementAfter(VanillaHudElements.SUBTITLES, Identifier.fromNamespaceAndPath(VeinForge.MOD_ID, "hud"), (drawContext, tickCounter) -> {
+      net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementAfter(net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.SUBTITLES, net.minecraft.resources.Identifier.fromNamespaceAndPath(me.grish.veinforge.VeinForge.MOD_ID, "hud"), (drawContext, tickCounter) -> {
          Minecraft mc = Minecraft.getInstance();
          if (mc.level == null || mc.player == null) return;
 
@@ -119,7 +130,7 @@ public class EventManager {
       if (config == null) return;
 
       int key = config.routeMiner.routeBuilder;
-      boolean pressed = KeyPressUtil.wasPressed(client.getWindow(), key, client.screen == null);
+      boolean pressed = KeyPressUtil.wasPressed(client.getWindow(), key, client.gui.screen() == null);
       if (pressed) {
          RouteBuilder.getInstance().toggle();
       }
@@ -130,7 +141,7 @@ public class EventManager {
       if (config == null) return;
       int key = config.general.openConfigGuiKeybind;
       if (key == GLFW.GLFW_KEY_UNKNOWN) return;
-      boolean pressed = KeyPressUtil.wasPressed(client.getWindow(), key, client.screen == null);
+      boolean pressed = KeyPressUtil.wasPressed(client.getWindow(), key, client.gui.screen() == null);
       if (pressed) {
          ConfigGuiManager.openConfigGui(null);
       }

@@ -20,7 +20,7 @@ public abstract class Logger {
          // Always defer chat writes to avoid rendering-phase violations.
          mc.execute(() -> {
             if (mc.player != null && mc.level != null) {
-               mc.player.displayClientMessage(Component.nullToEmpty(text), false);
+               mc.player.sendSystemMessage(Component.nullToEmpty(text));
             } else {
                VeinForge.LOGGER.info("{}", ChatFormatting.stripFormatting(text));
             }

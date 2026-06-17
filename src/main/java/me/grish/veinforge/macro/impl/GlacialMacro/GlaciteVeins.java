@@ -634,10 +634,10 @@ public enum GlaciteVeins {
          return null;
       }
       MineableBlock mineable = vein.mineableBlocks.get(0);
-      if (mineable == null || mineable.blocks == null || mineable.blocks.isEmpty()) {
+      if (mineable == null || mineable.getBlocks() == null || mineable.getBlocks().isEmpty()) {
          return null;
       }
-      return mineable.blocks.get(0);
+      return mineable.getBlocks().get(0);
    }
 
    public static GlaciteVeins getVeinFromName(String name) {

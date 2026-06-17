@@ -10,6 +10,7 @@ import me.grish.veinforge.util.helper.Clock;
 import me.grish.veinforge.util.helper.RotationConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -75,7 +76,7 @@ public class ApplyAbilityState implements BlockMinerState {
       }
 
       // Release all keys to prepare for the right click
-      if (mc.screen == null) {
+      if (mc.gui.screen() == null) {
          KeyBindUtil.releaseAllExcept();
       }
    }
@@ -113,7 +114,7 @@ public class ApplyAbilityState implements BlockMinerState {
                final BlockPos checkPos = playerBlockPos.offset(x, y, z);
                final Block block = mc.level.getBlockState(checkPos).getBlock();
 
-               if (block == Blocks.LIGHT_BLUE_WOOL) {
+               if (block == Blocks.WOOL.lightBlue()) {
                   double distance = playerBlockPos.distSqr(checkPos);
 
                   if (distance > maxDistance) {

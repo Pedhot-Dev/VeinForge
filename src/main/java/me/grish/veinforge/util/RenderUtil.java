@@ -3,9 +3,11 @@ package me.grish.veinforge.util;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.grish.veinforge.util.render.VFRenderLayers;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
@@ -14,12 +16,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Simple world + HUD rendering helpers.
  * <p>
- * World rendering is batched per-frame via {@link #beginWorldRender(PoseStack, Function)}
+ * World rendering is batched per-frame via {@link #beginWorldRender(LevelRenderContext)}
  * and {@link #endWorldRender()}.
  */
 public final class RenderUtil {
@@ -34,34 +35,35 @@ public final class RenderUtil {
    // Vanilla line rendering (used for occluded debug lines / block boxes).
    private static final float DEFAULT_LINE_WIDTH = 2.0f;
    private static final float DEFAULT_THIN_LINE_WIDTH = 1.0f;
-   private static PoseStack activeWorldMatrices;
-    private static Function<RenderType, VertexConsumer> activeWorldConsumers;
+   private static PoseStack activePoseStack;
+    private static SubmitNodeCollector activeNodeCollector;
    private static boolean pushedWorldMatrices;
 
    private RenderUtil() {
       // no instantiation
    }
 
-    public static void beginWorldRender(PoseStack matrices, Function<RenderType, VertexConsumer> consumers) {
-      activeWorldMatrices = matrices;
-      activeWorldConsumers = consumers;
+    public static void beginWorldRender(LevelRenderContext context) {
+      activeNodeCollector = context.submitNodeCollector();
+      activePoseStack = context.poseStack();
       pushedWorldMatrices = false;
 
-      if (activeWorldMatrices != null) {
-         Vec3 cameraPos = mc.gameRenderer.getMainCamera().position();
-         activeWorldMatrices.pushPose();
-         activeWorldMatrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+      if (activePoseStack != null) {
+         Vec3 cameraPos = mc.gameRenderer.mainCamera().position();
+
+         activePoseStack.pushPose();
+         activePoseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
          pushedWorldMatrices = true;
       }
    }
 
-   public static void endWorldRender() {
-      if (activeWorldMatrices != null && pushedWorldMatrices) {
-         activeWorldMatrices.popPose();
+    public static void endWorldRender() {
+      if (activePoseStack != null && pushedWorldMatrices) {
+         activePoseStack.popPose();
       }
 
-      activeWorldMatrices = null;
-      activeWorldConsumers = null;
+      activeNodeCollector = null;
+      activePoseStack = null;
       pushedWorldMatrices = false;
    }
 
@@ -106,12 +108,12 @@ public final class RenderUtil {
     * @param color       the colour of the line
     * @param overlayLine if true, render with depth test disabled (visible through blocks)
     */
-   public static void drawThinLine(Vec3 start, Vec3 end, Color color, boolean overlayLine) {
+    public static void drawThinLine(Vec3 start, Vec3 end, Color color, boolean overlayLine) {
       if (mc.level == null || mc.player == null) {
          return;
       }
 
-      if (activeWorldMatrices == null || activeWorldConsumers == null) {
+      if (activePoseStack == null || activeNodeCollector == null) {
          return;
       }
 
@@ -135,12 +137,12 @@ public final class RenderUtil {
     * @param color       the colour of the line
     * @param overlayLine if true, render with depth test disabled (visible through blocks)
     */
-   public static void drawLine(Vec3 start, Vec3 end, Color color, boolean overlayLine) {
+    public static void drawLine(Vec3 start, Vec3 end, Color color, boolean overlayLine) {
       if (mc.level == null || mc.player == null) {
          return;
       }
 
-      if (activeWorldMatrices == null || activeWorldConsumers == null) {
+      if (activePoseStack == null || activeNodeCollector == null) {
          return;
       }
 
@@ -180,7 +182,7 @@ public final class RenderUtil {
       if (mc.level == null || mc.player == null) {
          return;
       }
-      if (activeWorldMatrices == null || activeWorldConsumers == null) {
+      if (activePoseStack == null || activeNodeCollector == null) {
          return;
       }
 
@@ -207,37 +209,37 @@ public final class RenderUtil {
       drawSimpleWorldLine(start, end, color, DEFAULT_LINE_WIDTH);
    }
 
-   private static void drawSimpleWorldLine(Vec3 start, Vec3 end, Color color, float lineWidth) {
+    private static void drawSimpleWorldLine(Vec3 start, Vec3 end, Color color, float lineWidth) {
       int r = color.getRed();
       int g = color.getGreen();
       int b = color.getBlue();
       int a = color.getAlpha();
 
-      PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.linesTranslucent());
-
       float dx = (float) (end.x - start.x);
       float dy = (float) (end.y - start.y);
       float dz = (float) (end.z - start.z);
       float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+      final float nx, ny, nz;
       if (len <= 0.0001f) {
-         dx = 0.0f;
-         dy = 1.0f;
-         dz = 0.0f;
+         nx = 0.0f;
+         ny = 1.0f;
+         nz = 0.0f;
       } else {
-         dx /= len;
-         dy /= len;
-         dz /= len;
+         nx = dx / len;
+         ny = dy / len;
+         nz = dz / len;
       }
 
-      consumer.addVertex(entry, (float) start.x, (float) start.y, (float) start.z)
-              .setColor(r, g, b, a)
-              .setNormal(entry, dx, dy, dz)
-              .setLineWidth(lineWidth);
-      consumer.addVertex(entry, (float) end.x, (float) end.y, (float) end.z)
-              .setColor(r, g, b, a)
-              .setNormal(entry, dx, dy, dz)
-              .setLineWidth(lineWidth);
+      activeNodeCollector.submitCustomGeometry(activePoseStack, RenderTypes.linesTranslucent(), (pose, consumer) -> {
+         consumer.addVertex(pose, (float) start.x, (float) start.y, (float) start.z)
+                 .setColor(r, g, b, a)
+                 .setNormal(pose, nx, ny, nz)
+                 .setLineWidth(lineWidth);
+         consumer.addVertex(pose, (float) end.x, (float) end.y, (float) end.z)
+                 .setColor(r, g, b, a)
+                 .setNormal(pose, nx, ny, nz)
+                 .setLineWidth(lineWidth);
+      });
    }
 
    private static Color withAlpha(Color base, int alpha) {
@@ -247,7 +249,7 @@ public final class RenderUtil {
 
    private static float worldHalfWidthForPixels(Vec3 a, Vec3 b, float px) {
       Vec3 mid = a.add(b).scale(0.5);
-      Vec3 cam = mc.gameRenderer.getMainCamera().position();
+      Vec3 cam = mc.gameRenderer.mainCamera().position();
       double dist = cam.distanceTo(mid);
       double unitsPerPx = unitsPerPixel(dist);
       float half = (float) (Math.max(0.0, px) * unitsPerPx * 0.5);
@@ -275,17 +277,16 @@ public final class RenderUtil {
       return ((2.0 * distance * Math.tan(fovRad * 0.5)) / (double) fbH) * scale;
    }
 
-   private static void drawNoDepthDebugLine(Vec3 start, Vec3 end, Color color) {
+    private static void drawNoDepthDebugLine(Vec3 start, Vec3 end, Color color) {
       int r = color.getRed();
       int g = color.getGreen();
       int b = color.getBlue();
       int a = color.getAlpha();
 
-      PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.apply(VFRenderLayers.LINES_NO_DEPTH);
-
-      consumer.addVertex(entry, (float) start.x, (float) start.y, (float) start.z).setColor(r, g, b, a);
-      consumer.addVertex(entry, (float) end.x, (float) end.y, (float) end.z).setColor(r, g, b, a);
+      activeNodeCollector.submitCustomGeometry(activePoseStack, VFRenderLayers.LINES_NO_DEPTH, (pose, consumer) -> {
+         consumer.addVertex(pose, (float) start.x, (float) start.y, (float) start.z).setColor(r, g, b, a);
+         consumer.addVertex(pose, (float) end.x, (float) end.y, (float) end.z).setColor(r, g, b, a);
+      });
    }
 
    private static void drawRibbonSegment(Vec3 start, Vec3 end, Color color, float halfWidth, net.minecraft.client.renderer.rendertype.RenderType layer) {
@@ -297,7 +298,7 @@ public final class RenderUtil {
     * Camera-facing quad ribbon polyline.
     * Uses mitered joins with a conservative clamp to avoid "blobs" at sharp angles.
     */
-   private static void drawRibbonPolyline(List<Vec3> points, Color color, float halfWidth, net.minecraft.client.renderer.rendertype.RenderType layer) {
+    private static void drawRibbonPolyline(List<Vec3> points, Color color, float halfWidth, net.minecraft.client.renderer.rendertype.RenderType layer) {
       if (points.size() < 2) {
          return;
       }
@@ -307,75 +308,75 @@ public final class RenderUtil {
       int b = color.getBlue();
       int a = color.getAlpha();
 
-      PoseStack.Pose entry = activeWorldMatrices.last();
-      VertexConsumer consumer = activeWorldConsumers.apply(layer);
-      Vec3 cam = mc.gameRenderer.getMainCamera().position();
+      activeNodeCollector.submitCustomGeometry(activePoseStack, layer, (pose, consumer) -> {
+         Vec3 cam = mc.gameRenderer.mainCamera().position();
 
-      Vec3 prevLeft = null;
-      Vec3 prevRight = null;
+         Vec3 prevLeft = null;
+         Vec3 prevRight = null;
 
-      for (int i = 0; i < points.size(); i++) {
-         Vec3 p = points.get(i);
-         Vec3 pPrev = i == 0 ? p : points.get(i - 1);
-         Vec3 pNext = i == points.size() - 1 ? p : points.get(i + 1);
+         for (int i = 0; i < points.size(); i++) {
+            Vec3 p = points.get(i);
+            Vec3 pPrev = i == 0 ? p : points.get(i - 1);
+            Vec3 pNext = i == points.size() - 1 ? p : points.get(i + 1);
 
-         Vec3 dirPrev = p.subtract(pPrev);
-         Vec3 dirNext = pNext.subtract(p);
+            Vec3 dirPrev = p.subtract(pPrev);
+            Vec3 dirNext = pNext.subtract(p);
 
-         Vec3 dirA = dirPrev.lengthSqr() < 1.0E-6 ? dirNext : dirPrev;
-         Vec3 dirB = dirNext.lengthSqr() < 1.0E-6 ? dirPrev : dirNext;
-         if (dirA.lengthSqr() < 1.0E-6) {
-            continue;
+            Vec3 dirA = dirPrev.lengthSqr() < 1.0E-6 ? dirNext : dirPrev;
+            Vec3 dirB = dirNext.lengthSqr() < 1.0E-6 ? dirPrev : dirNext;
+            if (dirA.lengthSqr() < 1.0E-6) {
+               continue;
+            }
+
+            dirA = dirA.normalize();
+            if (dirB.lengthSqr() < 1.0E-6) {
+               dirB = dirA;
+            } else {
+               dirB = dirB.normalize();
+            }
+
+            Vec3 view = cam.subtract(p);
+            if (view.lengthSqr() < 1.0E-6) {
+               view = new Vec3(0.0, 1.0, 0.0);
+            } else {
+               view = view.normalize();
+            }
+
+            Vec3 perpA = safePerp(dirA, view);
+            Vec3 perpB = safePerp(dirB, view);
+
+            Vec3 miter = perpA.add(perpB);
+            if (miter.lengthSqr() < 1.0E-6) {
+               miter = perpB;
+            }
+            miter = miter.normalize();
+
+            double denom = miter.dot(perpA);
+            if (Math.abs(denom) < 0.2) {
+               denom = denom < 0 ? -0.2 : 0.2;
+            }
+
+            double miterScale = halfWidth / denom;
+            double max = halfWidth * 4.0;
+            if (miterScale > max) miterScale = max;
+            if (miterScale < -max) miterScale = -max;
+
+            Vec3 offset = miter.scale(miterScale);
+            Vec3 left = p.add(offset);
+            Vec3 right = p.subtract(offset);
+
+            if (prevLeft != null && prevRight != null) {
+               // Quad between previous and current.
+               consumer.addVertex(pose, (float) prevLeft.x, (float) prevLeft.y, (float) prevLeft.z).setColor(r, g, b, a);
+               consumer.addVertex(pose, (float) prevRight.x, (float) prevRight.y, (float) prevRight.z).setColor(r, g, b, a);
+               consumer.addVertex(pose, (float) right.x, (float) right.y, (float) right.z).setColor(r, g, b, a);
+               consumer.addVertex(pose, (float) left.x, (float) left.y, (float) left.z).setColor(r, g, b, a);
+            }
+
+            prevLeft = left;
+            prevRight = right;
          }
-
-         dirA = dirA.normalize();
-         if (dirB.lengthSqr() < 1.0E-6) {
-            dirB = dirA;
-         } else {
-            dirB = dirB.normalize();
-         }
-
-         Vec3 view = cam.subtract(p);
-         if (view.lengthSqr() < 1.0E-6) {
-            view = new Vec3(0.0, 1.0, 0.0);
-         } else {
-            view = view.normalize();
-         }
-
-         Vec3 perpA = safePerp(dirA, view);
-         Vec3 perpB = safePerp(dirB, view);
-
-         Vec3 miter = perpA.add(perpB);
-         if (miter.lengthSqr() < 1.0E-6) {
-            miter = perpB;
-         }
-         miter = miter.normalize();
-
-         double denom = miter.dot(perpA);
-         if (Math.abs(denom) < 0.2) {
-            denom = denom < 0 ? -0.2 : 0.2;
-         }
-
-         double miterScale = halfWidth / denom;
-         double max = halfWidth * 4.0;
-         if (miterScale > max) miterScale = max;
-         if (miterScale < -max) miterScale = -max;
-
-         Vec3 offset = miter.scale(miterScale);
-         Vec3 left = p.add(offset);
-         Vec3 right = p.subtract(offset);
-
-         if (prevLeft != null && prevRight != null) {
-            // Quad between previous and current.
-            consumer.addVertex(entry, (float) prevLeft.x, (float) prevLeft.y, (float) prevLeft.z).setColor(r, g, b, a);
-            consumer.addVertex(entry, (float) prevRight.x, (float) prevRight.y, (float) prevRight.z).setColor(r, g, b, a);
-            consumer.addVertex(entry, (float) right.x, (float) right.y, (float) right.z).setColor(r, g, b, a);
-            consumer.addVertex(entry, (float) left.x, (float) left.y, (float) left.z).setColor(r, g, b, a);
-         }
-
-         prevLeft = left;
-         prevRight = right;
-      }
+      });
    }
 
    private static Vec3 safePerp(Vec3 direction, Vec3 view) {
@@ -420,12 +421,12 @@ public final class RenderUtil {
     * @param color  the colour
     * @param filled whether to fill the box (true) or just draw its edges (false)
     */
-   public static void drawBox(AABB box, Color color, boolean filled) {
+    public static void drawBox(AABB box, Color color, boolean filled) {
       if (mc.level == null || mc.player == null) {
          return;
       }
 
-      if (activeWorldMatrices == null || activeWorldConsumers == null) {
+      if (activePoseStack == null || activeNodeCollector == null) {
          return;
       }
 
@@ -434,14 +435,14 @@ public final class RenderUtil {
       int b = color.getBlue();
       int a = color.getAlpha();
 
-      PoseStack.Pose entry = activeWorldMatrices.last();
-
       if (filled) {
-         VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.debugFilledBox());
-         addFilledBoxVertices(consumer, entry, box, r, g, b, a);
+         activeNodeCollector.submitCustomGeometry(activePoseStack, RenderTypes.debugFilledBox(), (pose, consumer) -> {
+            addFilledBoxVertices(consumer, pose, box, r, g, b, a);
+         });
       } else {
-         VertexConsumer consumer = activeWorldConsumers.apply(RenderTypes.lines());
-         addOutlineBoxVertices(consumer, entry, box, r, g, b, a);
+         activeNodeCollector.submitCustomGeometry(activePoseStack, RenderTypes.lines(), (pose, consumer) -> {
+            addOutlineBoxVertices(consumer, pose, box, r, g, b, a);
+         });
       }
    }
 

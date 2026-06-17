@@ -16,8 +16,8 @@ public class General {
                    "Glacial Commissions",
                    "Mining Macro",
                    "Route Miner",
-                   "Powder Macro",
-                   "Galatea Macro",
+//                   "Powder Macro",
+//                   "Galatea Macro",
            }
    )
    public int macroType = 0;

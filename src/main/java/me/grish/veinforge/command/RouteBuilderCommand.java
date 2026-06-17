@@ -171,7 +171,7 @@ public class RouteBuilderCommand {
 
    private void info(final String message) {
       if (Minecraft.getInstance().player != null) {
-         Minecraft.getInstance().player.displayClientMessage(Component.literal("§e" + message), false);
+         Minecraft.getInstance().player.sendSystemMessage(Component.literal("§e" + message));
       }
    }
 

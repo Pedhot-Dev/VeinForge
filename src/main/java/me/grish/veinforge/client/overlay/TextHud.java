@@ -51,6 +51,7 @@ public abstract class TextHud extends AbstractHUDElement {
          return Style.EMPTY;
       }
 
+
       if (code.isColor()) {
          return Style.EMPTY
                         .withColor(code)
@@ -272,7 +273,7 @@ public abstract class TextHud extends AbstractHUDElement {
       }
       int r = Math.max(0, Math.min(radius, Math.min(w / 2, h / 2)));
       if (r <= 0) {
-         context.renderOutline(x1, y1, w, h, color);
+         context.outline(x1, y1, w, h, color);
          return;
       }
 

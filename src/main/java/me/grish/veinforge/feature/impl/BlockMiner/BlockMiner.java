@@ -160,7 +160,7 @@ public class BlockMiner extends AbstractFeature {
 
       // Build priority mapping for block selection
       for (int i = 0; i < blocksToMine.length; i++) {
-         for (Block block : blocksToMine[i].blocks) {
+         for (Block block : blocksToMine[i].getBlocks()) {
             if (block != null) {
                blockPriority.put(block, priority[i]);
             }
@@ -193,7 +193,7 @@ public class BlockMiner extends AbstractFeature {
 
    @Override
    protected void onTick() {
-      if (!this.enabled || mc.screen != null) {
+      if (!this.enabled || mc.gui.screen() != null) {
          return;
       }
 

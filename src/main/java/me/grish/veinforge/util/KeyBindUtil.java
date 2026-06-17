@@ -54,7 +54,7 @@ public class KeyBindUtil {
    }
 
    public static void onTick(KeyMapping key) {
-      if (mc.screen == null) {
+      if (mc.gui.screen() == null) {
          KeyMapping.set(((KeyBindingAccessor) key).getBoundKey(), true);
       }
    }
@@ -69,7 +69,7 @@ public class KeyBindUtil {
 
    public static void setKeyBindState(KeyMapping key, boolean pressed) {
       if (pressed) {
-         if (mc.screen != null && key != null) {
+         if (mc.gui.screen() != null && key != null) {
             realSetKeyBindState(key, false);
             return;
          }

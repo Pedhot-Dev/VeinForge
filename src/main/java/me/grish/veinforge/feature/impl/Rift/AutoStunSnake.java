@@ -214,7 +214,7 @@ public class AutoStunSnake {
       if (!isAnyStainedGlass(state)) {
          return false;
       }
-      return state.is(Blocks.BLUE_STAINED_GLASS) || state.is(Blocks.LIGHT_BLUE_STAINED_GLASS);
+      return state.is(Blocks.STAINED_GLASS.blue()) || state.is(Blocks.STAINED_GLASS.lightBlue());
    }
 
    private int findHotbarSlotById(String itemId) {

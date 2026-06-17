@@ -9,6 +9,8 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
@@ -192,7 +194,7 @@ public class InventoryUtil {
    }
 
    public static String getInventoryName(AbstractContainerMenu container) {
-      if (mc.screen instanceof AbstractContainerScreen<?> screen) {
+      if (mc.gui.screen() instanceof AbstractContainerScreen<?> screen) {
          if (screen.getMenu() == container) {
             return screen.getTitle().getString();
          }
@@ -214,7 +216,7 @@ public class InventoryUtil {
    }
 
    public static void clickContainerSlot(int slot, int mouseButton, int clickMode) {
-      if (mc.gameMode == null || mc.player == null || mc.screen == null) {
+      if (mc.gameMode == null || mc.player == null || mc.gui.screen() == null) {
          return;
       }
 
@@ -223,24 +225,23 @@ public class InventoryUtil {
          return;
       }
 
-      net.minecraft.world.inventory.ClickType actionType = net.minecraft.world.inventory.ClickType.PICKUP;
+      net.minecraft.world.inventory.ContainerInput actionType = net.minecraft.world.inventory.ContainerInput.PICKUP;
       if (clickMode == 1) {
-         actionType = net.minecraft.world.inventory.ClickType.QUICK_MOVE;
+         actionType = net.minecraft.world.inventory.ContainerInput.QUICK_MOVE;
       } else if (clickMode == 2) {
-         actionType = net.minecraft.world.inventory.ClickType.SWAP;
+         actionType = net.minecraft.world.inventory.ContainerInput.SWAP;
       }
 
       mc.gameMode.handleInventoryMouseClick(
               containerId,
               slot,
               mouseButton,
-              actionType,
-              mc.player
+              actionType
       );
    }
 
    public static void swapSlots(int slot, int hotbarSlot) {
-      if (mc.gameMode == null || mc.player == null || mc.screen == null) {
+      if (mc.gameMode == null || mc.player == null || mc.gui.screen() == null) {
          return;
       }
 
@@ -253,26 +254,26 @@ public class InventoryUtil {
               containerId,
               slot,
               hotbarSlot,
-              net.minecraft.world.inventory.ClickType.SWAP,
+              ContainerInput.SWAP,
               mc.player
       );
    }
 
    private static Integer resolveContainerId() {
-      if (mc.player == null || mc.screen == null) {
+      if (mc.player == null || mc.gui.screen() == null) {
          return null;
       }
 
       if (mc.player.containerMenu instanceof ChestMenu) {
-         // The `closeScreen()` method already uses `mc.setScreen(null)`.
+         // The `closeScreen()` method already uses `mc.gui.setScreen(null)`.
          return mc.player.containerMenu.containerId;
       }
 
-      if (mc.screen instanceof InventoryScreen) {
+      if (mc.gui.screen() instanceof InventoryScreen) {
          return mc.player.inventoryMenu.containerId;
       }
 
-      if (mc.screen instanceof AbstractContainerScreen<?> screen) {
+      if (mc.gui.screen() instanceof AbstractContainerScreen<?> screen) {
          return screen.getMenu().containerId;
       }
 
@@ -285,13 +286,13 @@ public class InventoryUtil {
       // But to simulate press:
       if (mc.options.keyInventory.isUnbound()) { // This is hard to simulate directly without Input util
          // Just open the screen if possible, but usually this opens player inventory
-         // mc.setScreen(new InventoryScreen(mc.player));
+         // mc.gui.setScreen(new InventoryScreen(mc.player));
       }
       // TODO: Verify if we need to simulate key press or just open screen
    }
 
    public static void closeScreen() {
-      if (mc.screen != null && mc.player != null) {
+      if (mc.gui.screen() != null && mc.player != null) {
          // CRITICAL: Release all keys BEFORE closing container
          // This prevents key state desync between GUI open/close cycles
          // See: 1.21.1 no longer auto-clears keys on screen transitions like 1.8.9 did
@@ -301,7 +302,7 @@ public class InventoryUtil {
          int syncId = mc.player.containerMenu.containerId;
 
          // Close the container/screen on client side
-         mc.setScreen(null);
+         mc.gui.setScreen(null);
 
          // Tell the server to close the container
          // This prevents desync between client and server container states
@@ -312,7 +313,7 @@ public class InventoryUtil {
          // CRITICAL: Ensure keys stay released for 1 tick after GUI close
          // This prevents ghost key presses due to timing issues in modern Minecraft
          mc.execute(() -> {
-            if (mc.screen == null) {
+            if (mc.gui.screen() == null) {
                KeyBindUtil.releaseAllExcept();
             }
          });
@@ -407,7 +408,7 @@ public class InventoryUtil {
       if (mc.player == null || mc.player.containerMenu == null) {
          return false;
       }
-      if (!(mc.screen instanceof AbstractContainerScreen)) {
+      if (!(mc.gui.screen() instanceof AbstractContainerScreen)) {
          return false;
       }
       // Logic to check if last slot is loaded (implies container items received)

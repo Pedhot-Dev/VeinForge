@@ -37,7 +37,7 @@ public class MouseUngrab extends AbstractFeature {
          return;
       }
 
-      if (mc.screen == null) {
+      if (mc.gui.screen() == null) {
          mc.mouseHandler.grabMouse();
       }
 

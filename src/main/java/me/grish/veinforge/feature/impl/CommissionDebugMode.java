@@ -261,7 +261,7 @@ public class CommissionDebugMode extends AbstractFeature {
 
       Map<Block, Integer> blockPriority = new HashMap<>();
       for (int i = 0; i < blocksToMine.length; i++) {
-         for (Block b : blocksToMine[i].blocks) {
+         for (Block b : blocksToMine[i].getBlocks()) {
             if (b != null) {
                blockPriority.put(b, priorityToUse[i]);
             }

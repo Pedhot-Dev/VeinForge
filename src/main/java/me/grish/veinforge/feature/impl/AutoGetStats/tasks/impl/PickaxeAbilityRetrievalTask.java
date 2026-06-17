@@ -26,7 +26,7 @@ public class PickaxeAbilityRetrievalTask extends AbstractInventoryTask<BlockMine
 
       // The case that the HOTM menu is already open
       if (!InventoryUtil.getInventoryName().equals("Heart of the Mountain")) {
-         if (mc.screen != null) {
+         if (mc.gui.screen() != null) {
             InventoryUtil.closeScreen();
          }
 

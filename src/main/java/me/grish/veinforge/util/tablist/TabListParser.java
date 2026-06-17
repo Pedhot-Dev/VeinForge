@@ -36,7 +36,7 @@ public class TabListParser {
          WidgetType currentWidget = null;
 
          for (PlayerInfo entry : ordered) {
-            Component displayName = mc.gui.getTabList().getNameForDisplay(entry);
+            Component displayName = mc.gui.hud.getTabList().getNameForDisplay(entry);
             if (displayName == null) {
                continue;
             }

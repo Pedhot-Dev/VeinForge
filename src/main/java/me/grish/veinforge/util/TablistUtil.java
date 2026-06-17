@@ -50,7 +50,7 @@ public class TablistUtil {
       List<String> newFooter = new ArrayList<>();
 
       try {
-         Component header = ((PlayerListHudAccessor) mc.gui.getTabList()).veinforge$getHeader();
+         Component header = ((PlayerListHudAccessor) mc.gui.hud.getTabList()).veinforge$getHeader();
          if (header != null) {
             addSplitLines(newTablist, header.getString());
             if (!newTablist.isEmpty() && !newTablist.get(newTablist.size() - 1).isEmpty()) {
@@ -69,7 +69,7 @@ public class TablistUtil {
       }
 
       try {
-         Component footer = ((PlayerListHudAccessor) mc.gui.getTabList()).veinforge$getFooter();
+         Component footer = ((PlayerListHudAccessor) mc.gui.hud.getTabList()).veinforge$getFooter();
          if (footer != null) {
             addSplitLines(newFooter, footer.getString());
          }
@@ -116,7 +116,11 @@ public class TablistUtil {
          List<String> result = new ArrayList<>();
 
          for (PlayerInfo info : players) {
-            String name = Minecraft.getInstance().gui.getTabList().getNameForDisplay(info).getString();
+//            String name = Minecraft.getInstance().gui.tabList.getNameForDisplay(info).getString();
+            Minecraft mc = Minecraft.getInstance();
+            String name = mc.gui.hud.getTabList()
+                    .getNameForDisplay(info)
+                    .getString();
             result.add(name);
          }
          return result;

@@ -13,8 +13,8 @@ public class ConfigActions {
 
    public static void openHudEditor() {
       Minecraft client = Minecraft.getInstance();
-      Screen parent = client.screen;
-      client.setScreen(new HUDEditorScreen(parent));
+      Screen parent = client.gui.screen();
+      client.gui.setScreen(new HUDEditorScreen(parent));
    }
 
    public static void setMiningTool() {

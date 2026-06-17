@@ -34,9 +34,9 @@ public class VeinForgeConfig extends Config {
    public HUD hud = new HUD();
    @Category(name = "Render", desc = "Render Settings")
    public Render render = new Render();
-   @Expose
-   @Category(name = "Main", desc = "")
-   public MainCategory mainCategory = new MainCategory();
+//   @Expose
+//   @Category(name = "Main", desc = "")
+//   public MainCategory mainCategory = new MainCategory();
 
    @Override
    public StructuredText getTitle() {
