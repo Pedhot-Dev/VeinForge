@@ -5,15 +5,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.tags.FluidTags
 import net.minecraft.world.level.BlockGetter
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.CauldronBlock
-import net.minecraft.world.level.block.DoorBlock
-import net.minecraft.world.level.block.FenceGateBlock
-import net.minecraft.world.level.block.LadderBlock
-import net.minecraft.world.level.block.SlabBlock
-import net.minecraft.world.level.block.SnowLayerBlock
-import net.minecraft.world.level.block.StairBlock
-import net.minecraft.world.level.block.TrapDoorBlock
+import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.Half
 import net.minecraft.world.level.block.state.properties.SlabType
@@ -50,7 +42,7 @@ object MovementHelper {
             block == Blocks.FIRE || block == Blocks.TRIPWIRE || block == Blocks.COBWEB || block == Blocks.END_PORTAL || block == Blocks.COCOA || block is TrapDoorBlock -> false
             block is DoorBlock -> state.getValue(DoorBlock.OPEN)
             block is FenceGateBlock -> state.getValue(FenceGateBlock.OPEN)
-            block is net.minecraft.world.level.block.CarpetBlock -> null
+            block is CarpetBlock -> null
             block is SnowLayerBlock -> null
             !state.fluidState.isEmpty -> {
                 if (!state.fluidState.isSource) {
@@ -86,7 +78,7 @@ object MovementHelper {
     ): Boolean {
         val block = state.block
 
-        if (block is net.minecraft.world.level.block.CarpetBlock) {
+        if (block is CarpetBlock) {
             return canStandOn(bsa, x, y - 1, z)
         }
 
@@ -128,7 +120,7 @@ object MovementHelper {
             block == Blocks.SEA_LANTERN -> true
             isWotah(state) -> {
                 val up = bsa.get(x, y + 1, z).block
-                up == Blocks.LILY_PAD || up is net.minecraft.world.level.block.CarpetBlock
+                up == Blocks.LILY_PAD || up is CarpetBlock
             }
 
             isLava(state) -> false

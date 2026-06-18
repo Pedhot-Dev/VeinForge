@@ -58,6 +58,9 @@ public class SpawnParticleEvent {
       }
       return event;
    }
+    public ParticleType<?> getParticleType() {
+      return this.particleType;
+   }
 
    public Vec3 getPos() {
       return new Vec3(x, y, z);

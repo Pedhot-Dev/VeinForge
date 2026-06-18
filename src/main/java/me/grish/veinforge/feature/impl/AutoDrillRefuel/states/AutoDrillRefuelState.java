@@ -5,17 +5,17 @@ import me.grish.veinforge.feature.impl.AutoDrillRefuel.AutoDrillRefuel;
 
 public interface AutoDrillRefuelState {
 
-   void onStart(AutoDrillRefuel refueler);
+    void onStart(AutoDrillRefuel refueler);
 
-   AutoDrillRefuelState onTick(AutoDrillRefuel refueler);
+    AutoDrillRefuelState onTick(AutoDrillRefuel refueler);
 
-   void onEnd(AutoDrillRefuel refueler);
+    void onEnd(AutoDrillRefuel refueler);
 
-   default void log(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void log(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 
-   default void logError(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
-   }
+    default void logError(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
+    }
 }

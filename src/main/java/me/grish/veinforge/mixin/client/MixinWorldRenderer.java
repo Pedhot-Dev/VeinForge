@@ -11,19 +11,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public class MixinWorldRenderer {
 
-   @Inject(method = "destroyBlockProgress(ILnet/minecraft/core/BlockPos;I)V", at = @At("HEAD"))
-   private void veinforge$onSetBlockBreakingInfo(int entityId, BlockPos pos, int progress, CallbackInfo ci) {
-      if (pos == null || progress < 0) {
-         return;
-      }
+    @Inject(method = "destroyBlockProgress(ILnet/minecraft/core/BlockPos;I)V", at = @At("HEAD"))
+    private void veinforge$onSetBlockBreakingInfo(int entityId, BlockPos pos, int progress, CallbackInfo ci) {
+        if (pos == null || progress < 0) {
+            return;
+        }
 
-      float normalized = progress / 9.0f;
-      if (normalized < 0.0f) {
-         normalized = 0.0f;
-      } else if (normalized > 1.0f) {
-         normalized = 1.0f;
-      }
+        float normalized = progress / 9.0f;
+        if (normalized < 0.0f) {
+            normalized = 0.0f;
+        } else if (normalized > 1.0f) {
+            normalized = 1.0f;
+        }
 
-      BlockDestroyEvent.fire(pos, normalized);
-   }
+        BlockDestroyEvent.fire(pos, normalized);
+    }
 }

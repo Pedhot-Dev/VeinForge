@@ -11,77 +11,76 @@ import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 
 public class SlotChangeFailsafe extends AbstractFailsafe {
 
-   @Getter
-   private static final SlotChangeFailsafe instance = new SlotChangeFailsafe();
-   private final Minecraft mc = Minecraft.getInstance();
-   private final Clock timer = new Clock();
-   private int lastSelectedSlot;
-   private boolean slotChanged = false;
+    @Getter
+    private static final SlotChangeFailsafe instance = new SlotChangeFailsafe();
+    private final Minecraft mc = Minecraft.getInstance();
+    private final Clock timer = new Clock();
+    private int lastSelectedSlot;
+    private boolean slotChanged = false;
 
-   private SlotChangeFailsafe() {
-      this.lastSelectedSlot = mc.player != null ? mc.player.getInventory().getSelectedSlot() : -1;
-   }
+    private SlotChangeFailsafe() {
+        this.lastSelectedSlot = mc.player != null ? mc.player.getInventory().getSelectedSlot() : -1;
+    }
 
-   @Override
-   public String getName() {
-      return "SlotChangeFailsafe";
-   }
+    @Override
+    public String getName() {
+        return "SlotChangeFailsafe";
+    }
 
-   @Override
-   public Failsafe getFailsafeType() {
-      return Failsafe.SLOT_CHANGE;
-   }
+    @Override
+    public Failsafe getFailsafeType() {
+        return Failsafe.SLOT_CHANGE;
+    }
 
-   @Override
-   public int getPriority() {
-      return 5;
-   }
+    @Override
+    public int getPriority() {
+        return 5;
+    }
 
-   @Override
-   public boolean onTick() {
-      if (slotChanged && timer.passed()) {
-         Logger.sendLog("Timer passed after slot change");
-         return true;
-      }
+    @Override
+    public boolean onTick() {
+        if (slotChanged && timer.passed()) {
+            Logger.sendLog("Timer passed after slot change");
+            return true;
+        }
 
-      return false;
-   }
+        return false;
+    }
 
-   @Override
-   public boolean onPacketReceive(Packet<?> packet) {
-      if (packet instanceof ClientboundSetHeldSlotPacket p) {
-         int slotIndex = p.slot();
+    @Override
+    public boolean onPacketReceive(Packet<?> packet) {
+        if (packet instanceof ClientboundSetHeldSlotPacket(int slotIndex)) {
 
-         if (slotIndex != lastSelectedSlot) {
-            log("Slot changed by S09 packet from " + lastSelectedSlot + " to " + slotIndex);
-            slotChanged = true;
-            lastSelectedSlot = slotIndex;
+            if (slotIndex != lastSelectedSlot) {
+                log("Slot changed by S09 packet from " + lastSelectedSlot + " to " + slotIndex);
+                slotChanged = true;
+                lastSelectedSlot = slotIndex;
 
-            if (!timer.isScheduled()) {
-               timer.schedule(2000);
+                if (!timer.isScheduled()) {
+                    timer.schedule(2000);
+                }
             }
-         }
-      }
+        }
 
-      return false;
-   }
+        return false;
+    }
 
-   @Override
-   public boolean react() {
-      if (slotChanged) {
-         MacroManager.getInstance().disable();
-         warn("Slot selection changed! Disabling macro.");
-         slotChanged = false;
-         return true;
-      }
+    @Override
+    public boolean react() {
+        if (slotChanged) {
+            MacroManager.getInstance().disable();
+            warn("Slot selection changed! Disabling macro.");
+            slotChanged = false;
+            return true;
+        }
 
-      return false;
-   }
+        return false;
+    }
 
-   @Override
-   public void resetStates() {
-      timer.reset();
-      slotChanged = false;
-      log("SlotChangeFailsafe state reset.");
-   }
+    @Override
+    public void resetStates() {
+        timer.reset();
+        slotChanged = false;
+        log("SlotChangeFailsafe state reset.");
+    }
 }

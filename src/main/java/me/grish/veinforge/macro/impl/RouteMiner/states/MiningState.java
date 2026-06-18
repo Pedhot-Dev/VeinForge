@@ -12,44 +12,44 @@ import me.grish.veinforge.util.helper.MineableBlock;
  */
 public class MiningState implements RouteMinerMacroState {
 
-   @Override
-   public void onStart(RouteMinerMacro macro) {
-      log("Entering Mining State");
-      InventoryUtil.holdItem(VeinForge.config().general.miningTool);
-      startMining(macro);
-   }
+    @Override
+    public void onStart(RouteMinerMacro macro) {
+        log("Entering Mining State");
+        InventoryUtil.holdItem(VeinForge.config().general.miningTool);
+        startMining(macro);
+    }
 
-   @Override
-   public RouteMinerMacroState onTick(RouteMinerMacro macro) {
-      if (BlockMiner.getInstance().getError() == BlockMiner.BlockMinerError.NOT_ENOUGH_BLOCKS) {
-         BlockMiner.getInstance().stop();
-         macro.setRouteIndex(macro.getRouteIndex() + 1);
-         return new MovingState();
-      }
+    @Override
+    public RouteMinerMacroState onTick(RouteMinerMacro macro) {
+        if (BlockMiner.getInstance().getError() == BlockMiner.BlockMinerError.NOT_ENOUGH_BLOCKS) {
+            BlockMiner.getInstance().stop();
+            macro.setRouteIndex(macro.getRouteIndex() + 1);
+            return new MovingState();
+        }
 
-      return this;
-   }
+        return this;
+    }
 
-   private void startMining(RouteMinerMacro macro) {
-      MineableBlock[] blocksToMine = macro.getBlocksToMine();
+    private void startMining(RouteMinerMacro macro) {
+        MineableBlock[] blocksToMine = macro.getBlocksToMine();
 
-      if (blocksToMine.length == 0) {
-         macro.disable("No targets provided in configuration.");
-         return;
-      }
+        if (blocksToMine.length == 0) {
+            macro.disable("No targets provided in configuration.");
+            return;
+        }
 
-      BlockMiner.getInstance().start(
-              blocksToMine,
-              macro.getMiningSpeed(),
-              macro.getPickaxeAbility(),
-              macro.getBlockPriority(),
-              VeinForge.config().general.miningTool
-      );
-   }
+        BlockMiner.getInstance().start(
+                blocksToMine,
+                macro.getMiningSpeed(),
+                macro.getPickaxeAbility(),
+                macro.getBlockPriority(),
+                VeinForge.config().general.miningTool
+        );
+    }
 
-   @Override
-   public void onEnd(RouteMinerMacro macro) {
-      log("Exiting Mining State");
-   }
+    @Override
+    public void onEnd(RouteMinerMacro macro) {
+        log("Exiting Mining State");
+    }
 
 }

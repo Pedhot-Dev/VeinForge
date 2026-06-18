@@ -10,24 +10,24 @@ import me.grish.veinforge.util.InventoryUtil;
  */
 public class StartingState implements RouteMinerMacroState {
 
-   @Override
-   public void onStart(RouteMinerMacro macro) {
-      log("Entering Starting State");
-   }
+    @Override
+    public void onStart(RouteMinerMacro macro) {
+        log("Entering Starting State");
+    }
 
-   @Override
-   public RouteMinerMacroState onTick(RouteMinerMacro macro) {
-      if (!InventoryUtil.areItemsInHotbar(macro.getNecessaryItems())) {
-         macro.disable("Please put the following items in hotbar: " + InventoryUtil.getMissingItemsInHotbar(macro.getNecessaryItems()));
-         return null;
-      }
+    @Override
+    public RouteMinerMacroState onTick(RouteMinerMacro macro) {
+        if (!InventoryUtil.areItemsInHotbar(macro.getNecessaryItems())) {
+            macro.disable("Please put the following items in hotbar: " + InventoryUtil.getMissingItemsInHotbar(macro.getNecessaryItems()));
+            return null;
+        }
 
-      return new GettingStatsState();
-   }
+        return new GettingStatsState();
+    }
 
-   @Override
-   public void onEnd(RouteMinerMacro macro) {
-      log("Exiting Starting State");
-   }
+    @Override
+    public void onEnd(RouteMinerMacro macro) {
+        log("Exiting Starting State");
+    }
 
 }

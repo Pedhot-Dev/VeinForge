@@ -9,16 +9,16 @@ import java.util.function.Consumer;
  */
 public record UpdateTablistEvent(List<String> tablist, long timestamp) {
 
-   private static final List<Consumer<UpdateTablistEvent>> listeners = new ArrayList<>();
+    private static final List<Consumer<UpdateTablistEvent>> listeners = new ArrayList<>();
 
-   public static void register(Consumer<UpdateTablistEvent> listener) {
-      listeners.add(listener);
-   }
+    public static void register(Consumer<UpdateTablistEvent> listener) {
+        listeners.add(listener);
+    }
 
-   public static void fire(List<String> tablist) {
-      UpdateTablistEvent event = new UpdateTablistEvent(tablist, System.currentTimeMillis());
-      for (Consumer<UpdateTablistEvent> listener : listeners) {
-         listener.accept(event);
-      }
-   }
+    public static void fire(List<String> tablist) {
+        UpdateTablistEvent event = new UpdateTablistEvent(tablist, System.currentTimeMillis());
+        for (Consumer<UpdateTablistEvent> listener : listeners) {
+            listener.accept(event);
+        }
+    }
 }

@@ -9,13 +9,13 @@ import java.util.Set;
 
 public class TabListData {
 
-   public static final TabListData EMPTY = new TabListData();
-   public Set<WidgetType> activeWidgets;
-   public Map<WidgetType, List<String>> widgetLines = new EnumMap<>(
-           WidgetType.class
-   );
+    public static final TabListData EMPTY = new TabListData();
+    public Set<WidgetType> activeWidgets;
+    public Map<WidgetType, List<String>> widgetLines = new EnumMap<>(
+            WidgetType.class
+    );
 
-   public String serialize() {
-      return VeinForgeClient.GSON.toJson(this);
-   }
+    public String serialize() {
+        return VeinForgeClient.GSON.toJson(this);
+    }
 }

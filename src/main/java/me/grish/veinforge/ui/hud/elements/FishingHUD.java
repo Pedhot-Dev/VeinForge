@@ -1,7 +1,6 @@
 package me.grish.veinforge.ui.hud.elements;
 
 import lombok.Getter;
-import me.grish.veinforge.VeinForge;
 import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.macro.AbstractMacro;
 import me.grish.veinforge.macro.MacroManager;
@@ -18,15 +17,15 @@ public class FishingHUD extends TextHud {
    @Getter
    private static final FishingHUD instance = new FishingHUD();
 
-   public static FishingHUD getInstance() {
-      return instance;
-   }
-
    private FishingHUD() {
       super();
       this.x = 5;
       this.y = 185;
       this.enabled = true;
+   }
+
+   public static FishingHUD getInstance() {
+      return instance;
    }
 
    @Override

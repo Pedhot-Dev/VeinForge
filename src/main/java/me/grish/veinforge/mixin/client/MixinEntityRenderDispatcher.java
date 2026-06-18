@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityRenderDispatcher.class)
 public class MixinEntityRenderDispatcher {
 
-   @Inject(
+    @Inject(
             method = "submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/state/level/CameraRenderState;DDDLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;)V",
             at = @At(
                     value = "INVOKE",
@@ -23,8 +23,8 @@ public class MixinEntityRenderDispatcher {
             )
     )
     private void veinforge$submitBeforeRenderer(EntityRenderState renderState, CameraRenderState cameraRenderState, double x, double y, double z, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CallbackInfo ci) {
-      if (renderState instanceof AvatarRenderState avatarRenderState) {
-         SpinRenderController.applyAvatarSpin(avatarRenderState, poseStack);
-      }
-   }
+        if (renderState instanceof AvatarRenderState avatarRenderState) {
+            SpinRenderController.applyAvatarSpin(avatarRenderState, poseStack);
+        }
+    }
 }

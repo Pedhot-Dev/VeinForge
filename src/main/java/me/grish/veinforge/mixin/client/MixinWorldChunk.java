@@ -15,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LevelChunk.class)
 public class MixinWorldChunk {
 
-   @Inject(method = "setBlockState", at = @At("RETURN"))
-   private void veinforge$onSetBlockState(BlockPos pos, BlockState state, int moved, CallbackInfoReturnable<BlockState> cir) {
-      final BlockState old = cir.getReturnValue();
-      if (old == null || state == old) return;
-      BlockChangeEvent.fire(pos, old, state);
-   }
+    @Inject(method = "setBlockState", at = @At("RETURN"))
+    private void veinforge$onSetBlockState(BlockPos pos, BlockState state, int moved, CallbackInfoReturnable<BlockState> cir) {
+        final BlockState old = cir.getReturnValue();
+        if (old == null || state == old) return;
+        BlockChangeEvent.fire(pos, old, state);
+    }
 }

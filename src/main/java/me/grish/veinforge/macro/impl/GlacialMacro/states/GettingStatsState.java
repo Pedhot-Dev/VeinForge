@@ -13,51 +13,51 @@ import me.grish.veinforge.macro.impl.GlacialMacro.GlacialMacro;
  */
 public class GettingStatsState implements GlacialMacroState {
 
-   private final AutoGetStats autoInventory = AutoGetStats.getInstance();
-   private MiningSpeedRetrievalTask miningSpeedTask;
-   private PickaxeAbilityRetrievalTask pickaxeAbilityTask;
+    private final AutoGetStats autoInventory = AutoGetStats.getInstance();
+    private MiningSpeedRetrievalTask miningSpeedTask;
+    private PickaxeAbilityRetrievalTask pickaxeAbilityTask;
 
-   @Override
-   public void onStart(GlacialMacro macro) {
-      log("Entering getting stats state");
-      miningSpeedTask = new MiningSpeedRetrievalTask();
-      pickaxeAbilityTask = new PickaxeAbilityRetrievalTask();
-      AutoGetStats.getInstance().startTask(pickaxeAbilityTask);
-      AutoGetStats.getInstance().startTask(miningSpeedTask);
-   }
+    @Override
+    public void onStart(GlacialMacro macro) {
+        log("Entering getting stats state");
+        miningSpeedTask = new MiningSpeedRetrievalTask();
+        pickaxeAbilityTask = new PickaxeAbilityRetrievalTask();
+        AutoGetStats.getInstance().startTask(pickaxeAbilityTask);
+        AutoGetStats.getInstance().startTask(miningSpeedTask);
+    }
 
-   @Override
-   public GlacialMacroState onTick(GlacialMacro macro) {
-      if (!AutoGetStats.getInstance().hasFinishedAllTasks()) {
-         return this;
-      }
+    @Override
+    public GlacialMacroState onTick(GlacialMacro macro) {
+        if (!AutoGetStats.getInstance().hasFinishedAllTasks()) {
+            return this;
+        }
 
-      if (miningSpeedTask.getError() != null) {
-         if (miningSpeedTask.getError().equals("Failed to parse mining speed in GUI")) {
-            macro.transitionTo(new NewLobbyState());
-         } else {
-            macro.disable("Failed to get stats with the following error: "
-                                  + miningSpeedTask.getError());
-         }
-         return null;
-      }
+        if (miningSpeedTask.getError() != null) {
+            if (miningSpeedTask.getError().equals("Failed to parse mining speed in GUI")) {
+                macro.transitionTo(new NewLobbyState());
+            } else {
+                macro.disable("Failed to get stats with the following error: "
+                        + miningSpeedTask.getError());
+            }
+            return null;
+        }
 
-      if (pickaxeAbilityTask.getError() != null) {
-         macro.disable("Failed to get pickaxe ability with the following error: "
-                               + pickaxeAbilityTask.getError());
-         return null;
-      }
+        if (pickaxeAbilityTask.getError() != null) {
+            macro.disable("Failed to get pickaxe ability with the following error: "
+                    + pickaxeAbilityTask.getError());
+            return null;
+        }
 
-      macro.setMiningSpeed(miningSpeedTask.getResult());
-      log("MiningSpeed: " + macro.getMiningSpeed());
-      macro.setPickaxeAbility(VeinForge.config().general.usePickaxeAbility ?
-                                      pickaxeAbilityTask.getResult() : BlockMiner.PickaxeAbility.NONE);
-      return new PathfindingState();
-   }
+        macro.setMiningSpeed(miningSpeedTask.getResult());
+        log("MiningSpeed: " + macro.getMiningSpeed());
+        macro.setPickaxeAbility(VeinForge.config().general.usePickaxeAbility ?
+                pickaxeAbilityTask.getResult() : BlockMiner.PickaxeAbility.NONE);
+        return new PathfindingState();
+    }
 
-   @Override
-   public void onEnd(GlacialMacro macro) {
-      autoInventory.stop();
-      log("Exiting getting stats state");
-   }
+    @Override
+    public void onEnd(GlacialMacro macro) {
+        autoInventory.stop();
+        log("Exiting getting stats state");
+    }
 }

@@ -3,7 +3,6 @@ package me.grish.veinforge.pathfinder.util
 import me.grish.veinforge.pathfinder.helper.BlockStateAccessor
 import me.grish.veinforge.pathfinder.movement.CalculationContext
 import me.grish.veinforge.pathfinder.movement.MovementHelper
-import me.grish.veinforge.pathfinder.util.BlockUtil.bresenham
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.Mth

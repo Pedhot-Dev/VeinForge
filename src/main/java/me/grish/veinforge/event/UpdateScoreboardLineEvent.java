@@ -9,16 +9,16 @@ import java.util.function.Consumer;
  */
 public record UpdateScoreboardLineEvent(String line) {
 
-   private static final List<Consumer<UpdateScoreboardLineEvent>> listeners = new ArrayList<>();
+    private static final List<Consumer<UpdateScoreboardLineEvent>> listeners = new ArrayList<>();
 
-   public static void register(Consumer<UpdateScoreboardLineEvent> listener) {
-      listeners.add(listener);
-   }
+    public static void register(Consumer<UpdateScoreboardLineEvent> listener) {
+        listeners.add(listener);
+    }
 
-   public static void fire(String line) {
-      UpdateScoreboardLineEvent event = new UpdateScoreboardLineEvent(line);
-      for (Consumer<UpdateScoreboardLineEvent> listener : listeners) {
-         listener.accept(event);
-      }
-   }
+    public static void fire(String line) {
+        UpdateScoreboardLineEvent event = new UpdateScoreboardLineEvent(line);
+        for (Consumer<UpdateScoreboardLineEvent> listener : listeners) {
+            listener.accept(event);
+        }
+    }
 }

@@ -20,36 +20,36 @@ import java.util.Map;
 @Mixin(Scoreboard.class)
 public abstract class MixinScoreboard {
 
-   @Shadow
-   public abstract PlayerTeam getPlayerTeam(String name);
+    @Shadow
+    public abstract PlayerTeam getPlayerTeam(String name);
 
-   @Inject(method = "removePlayerTeam", at = @At("HEAD"), cancellable = true)
-   private void veinforge$checkIfTeamIsNull(PlayerTeam team, CallbackInfo ci) {
-      if (team == null) ci.cancel();
-   }
+    @Inject(method = "removePlayerTeam", at = @At("HEAD"), cancellable = true)
+    private void veinforge$checkIfTeamIsNull(PlayerTeam team, CallbackInfo ci) {
+        if (team == null) ci.cancel();
+    }
 
-   @Redirect(method = "removePlayerTeam", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 0, remap = false))
-   private <K, V> V veinforge$checkIfRegisteredNameIsNull(Map<K, V> instance, K o) {
-      if (o != null) return instance.remove(o);
-      return null;
-   }
+    @Redirect(method = "removePlayerTeam", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 0, remap = false))
+    private <K, V> V veinforge$checkIfRegisteredNameIsNull(Map<K, V> instance, K o) {
+        if (o != null) return instance.remove(o);
+        return null;
+    }
 
-   @Inject(method = "removeObjective", at = @At("HEAD"), cancellable = true)
-   private void veinforge$checkIfObjectiveIsNull(Objective objective, CallbackInfo ci) {
-      if (objective == null) ci.cancel();
-   }
+    @Inject(method = "removeObjective", at = @At("HEAD"), cancellable = true)
+    private void veinforge$checkIfObjectiveIsNull(Objective objective, CallbackInfo ci) {
+        if (objective == null) ci.cancel();
+    }
 
-   @Redirect(method = "removeObjective", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 0, remap = false))
-   private <K, V> V veinforge$checkIfNameIsNull(Map<K, V> instance, K o) {
-      if (o != null) return instance.remove(o);
-      return null;
-   }
+    @Redirect(method = "removeObjective", at = @At(value = "INVOKE", target = "Ljava/util/Map;remove(Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 0, remap = false))
+    private <K, V> V veinforge$checkIfNameIsNull(Map<K, V> instance, K o) {
+        if (o != null) return instance.remove(o);
+        return null;
+    }
 
-   @Inject(method = "addPlayerTeam", at = @At(value = "CONSTANT", args = "stringValue=A team with the name '"), cancellable = true)
-   private void veinforge$returnExistingTeam(String name, CallbackInfoReturnable<PlayerTeam> cir) {
-      PlayerTeam existing = this.getPlayerTeam(name);
-      if (existing != null) {
-         cir.setReturnValue(existing);
-      }
-   }
+    @Inject(method = "addPlayerTeam", at = @At(value = "CONSTANT", args = "stringValue=A team with the name '"), cancellable = true)
+    private void veinforge$returnExistingTeam(String name, CallbackInfoReturnable<PlayerTeam> cir) {
+        PlayerTeam existing = this.getPlayerTeam(name);
+        if (existing != null) {
+            cir.setReturnValue(existing);
+        }
+    }
 }

@@ -15,25 +15,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Connection.class)
 public class MixinClientConnection {
 
-   @Inject(
-           method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V",
-           at = @At("HEAD"),
-           cancellable = true
-   )
-   private void veinforge$onPacketReceived(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-      PacketEvent.Received event = new PacketEvent.Received(packet);
-      PacketEvent.fireReceived(event);
-      if (event.isCancelled()) {
-         ci.cancel();
-      }
-   }
+    @Inject(
+            method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void veinforge$onPacketReceived(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
+        PacketEvent.Received event = new PacketEvent.Received(packet);
+        PacketEvent.fireReceived(event);
+        if (event.isCancelled()) {
+            ci.cancel();
+        }
+    }
 
-   @Inject(method = "send(Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"), cancellable = true)
-   private void veinforge$onPacketSent(Packet<?> packet, CallbackInfo ci) {
-      PacketEvent.Sent event = new PacketEvent.Sent(packet);
-      PacketEvent.fireSent(event);
-      if (event.isCancelled()) {
-         ci.cancel();
-      }
-   }
+    @Inject(method = "send(Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"), cancellable = true)
+    private void veinforge$onPacketSent(Packet<?> packet, CallbackInfo ci) {
+        PacketEvent.Sent event = new PacketEvent.Sent(packet);
+        PacketEvent.fireSent(event);
+        if (event.isCancelled()) {
+            ci.cancel();
+        }
+    }
 }

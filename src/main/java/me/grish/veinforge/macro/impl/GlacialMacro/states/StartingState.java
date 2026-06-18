@@ -14,37 +14,37 @@ import java.util.Objects;
  * If not, it will attempt to teleport the player to the Dwarven Base Camp.
  */
 public class StartingState implements GlacialMacroState {
-   @Override
-   public void onStart(GlacialMacro macro) {
-      log("Entering starting state");
+    @Override
+    public void onStart(GlacialMacro macro) {
+        log("Entering starting state");
 
-   }
+    }
 
-   @Override
-   public GlacialMacroState onTick(GlacialMacro macro) {
+    @Override
+    public GlacialMacroState onTick(GlacialMacro macro) {
 
-      if (Objects.equals(VeinForge.config().general.miningTool, "")) {
-         macro.disable("Mining tool is not set in the VeinForge config");
-         return null;
-      }
-
-      SubLocation subLocation = GameStateHandler.getInstance().getCurrentSubLocation();
-      if (subLocation == SubLocation.DWARVEN_BASE_CAMP) {
-         if (!InventoryUtil.areItemsInHotbar(macro.getNecessaryItems())) {
-            macro.disable("Please put the following items in hotbar: " + InventoryUtil.getMissingItemsInHotbar(macro.getNecessaryItems()));
+        if (Objects.equals(VeinForge.config().general.miningTool, "")) {
+            macro.disable("Mining tool is not set in the VeinForge config");
             return null;
-         }
+        }
 
-         log("Player is in a valid location. Initialising stats");
-         return new GettingStatsState();
-      } else {
-         log("Player is not at Dwarven Base Camp. Teleporting...");
-         return new TeleportingState(new StartingState());
-      }
-   }
+        SubLocation subLocation = GameStateHandler.getInstance().getCurrentSubLocation();
+        if (subLocation == SubLocation.DWARVEN_BASE_CAMP) {
+            if (!InventoryUtil.areItemsInHotbar(macro.getNecessaryItems())) {
+                macro.disable("Please put the following items in hotbar: " + InventoryUtil.getMissingItemsInHotbar(macro.getNecessaryItems()));
+                return null;
+            }
 
-   @Override
-   public void onEnd(GlacialMacro macro) {
-      log("Exiting starting state");
-   }
+            log("Player is in a valid location. Initialising stats");
+            return new GettingStatsState();
+        } else {
+            log("Player is not at Dwarven Base Camp. Teleporting...");
+            return new TeleportingState(new StartingState());
+        }
+    }
+
+    @Override
+    public void onEnd(GlacialMacro macro) {
+        log("Exiting starting state");
+    }
 }

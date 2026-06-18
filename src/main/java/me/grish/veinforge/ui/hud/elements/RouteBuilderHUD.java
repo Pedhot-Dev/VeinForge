@@ -1,44 +1,37 @@
 package me.grish.veinforge.ui.hud.elements;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import lombok.Getter;
-import me.grish.veinforge.ui.hud.ColorPalette;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-
 import me.grish.veinforge.VeinForge;
 import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.feature.impl.RouteBuilder;
 import me.grish.veinforge.handler.GraphHandler;
 import me.grish.veinforge.handler.RouteHandler;
+import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.util.KeyPressUtil;
 import me.grish.veinforge.util.PlayerUtil;
 import me.grish.veinforge.util.helper.graph.Graph;
 import me.grish.veinforge.util.helper.route.Route;
 import me.grish.veinforge.util.helper.route.RouteWaypoint;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.*;
 
 public class RouteBuilderHUD extends TextHud {
    @Getter
    private static final RouteBuilderHUD instance = new RouteBuilderHUD();
-
-   public static RouteBuilderHUD getInstance() {
-      return instance;
-   }
    private final RouteBuilder routeBuilder = RouteBuilder.getInstance();
    private final GraphHandler graphHandler = GraphHandler.instance;
    private final RouteHandler routeHandler = RouteHandler.getInstance();
-
    public RouteBuilderHUD() {
       super();
       this.x = 5;
       this.y = 90;
       this.enabled = true;
+   }
+
+   public static RouteBuilderHUD getInstance() {
+      return instance;
    }
 
    @Override

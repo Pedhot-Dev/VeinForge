@@ -10,21 +10,21 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Minecraft.class)
 public interface MinecraftAccessor {
 
-   @Accessor("missTime")
-   int getAttackCooldown();
+    @Accessor("missTime")
+    int getAttackCooldown();
 
-   @Accessor("missTime")
-   void setAttackCooldown(int attackCooldown);
+    @Accessor("missTime")
+    void setAttackCooldown(int attackCooldown);
 
-   @Accessor("rightClickDelay")
-   int getItemUseCooldown();
+    @Accessor("rightClickDelay")
+    int getItemUseCooldown();
 
-   @Accessor("rightClickDelay")
-   void setItemUseCooldown(int itemUseCooldown);
+    @Accessor("rightClickDelay")
+    void setItemUseCooldown(int itemUseCooldown);
 
-   @Accessor("rightClickDelay")
-   int getRightClickDelayTimer();
+    @Accessor("rightClickDelay")
+    int getRightClickDelayTimer();
 
-   @Accessor("rightClickDelay")
-   void setRightClickDelayTimer(int delay);
+    @Accessor("rightClickDelay")
+    void setRightClickDelayTimer(int delay);
 }

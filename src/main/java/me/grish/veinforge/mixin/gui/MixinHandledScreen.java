@@ -17,8 +17,8 @@ public abstract class MixinHandledScreen {
 
     @Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"), cancellable = true)
     private void veinforge$onMouseClick(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo ci) {
-      if (MacroManager.getInstance().isRunning()) {
-         ci.cancel();
-      }
-   }
+        if (MacroManager.getInstance().isRunning()) {
+            ci.cancel();
+        }
+    }
 }

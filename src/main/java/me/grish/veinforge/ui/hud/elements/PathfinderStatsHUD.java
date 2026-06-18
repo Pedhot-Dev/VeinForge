@@ -3,8 +3,8 @@ package me.grish.veinforge.ui.hud.elements;
 import lombok.Getter;
 import me.grish.veinforge.client.overlay.TextHud;
 import me.grish.veinforge.feature.impl.Pathfinder;
-import me.grish.veinforge.ui.hud.ColorPalette;
 import me.grish.veinforge.pathfinder.calculate.PathfindingTelemetry;
+import me.grish.veinforge.ui.hud.ColorPalette;
 
 import java.util.List;
 import java.util.Locale;
@@ -14,15 +14,15 @@ public class PathfinderStatsHUD extends TextHud {
    @Getter
    private static final PathfinderStatsHUD instance = new PathfinderStatsHUD();
 
-   public static PathfinderStatsHUD getInstance() {
-      return instance;
-   }
-
    public PathfinderStatsHUD() {
       super();
       this.x = 5;
       this.y = 140;
       this.enabled = true;
+   }
+
+   public static PathfinderStatsHUD getInstance() {
+      return instance;
    }
 
    @Override
@@ -60,13 +60,13 @@ public class PathfinderStatsHUD extends TextHud {
          return;
       }
 
-      String status = telemetry.isSuccess() ? "§aSUCCESS" : "§cFAILED";
-      String failure = telemetry.getFailureReason().isEmpty() ? "-" : telemetry.getFailureReason();
-      lines.add("§8» §7Status: " + status + (telemetry.isDirectWalk() ? " §8(§bdirect§8)" : ""));
-      lines.add(String.format(Locale.ROOT, "§8» §7Time: §f%.1fms §8(§7smooth: §f%.1fms§8)", telemetry.getSearchMs(), telemetry.getSmoothingMs()));
-      lines.add("§8» §7Nodes: §f" + telemetry.getExpandedNodes() + " §8(§7peak: §f" + telemetry.getOpenSetPeak() + "§8)");
-      lines.add("§8» §7Length: §f" + telemetry.getPathLength() + " §8(§7smooth: §f" + telemetry.getSmoothedPathLength() + "§8)");
-      if (!telemetry.isSuccess()) {
+      String status = telemetry.success() ? "§aSUCCESS" : "§cFAILED";
+      String failure = telemetry.failureReason().isEmpty() ? "-" : telemetry.failureReason();
+      lines.add("§8» §7Status: " + status + (telemetry.directWalk() ? " §8(§bdirect§8)" : ""));
+      lines.add(String.format(Locale.ROOT, "§8» §7Time: §f%.1fms §8(§7smooth: §f%.1fms§8)", telemetry.searchMs(), telemetry.smoothingMs()));
+      lines.add("§8» §7Nodes: §f" + telemetry.expandedNodes() + " §8(§7peak: §f" + telemetry.openSetPeak() + "§8)");
+      lines.add("§8» §7Length: §f" + telemetry.pathLength() + " §8(§7smooth: §f" + telemetry.smoothedPathLength() + "§8)");
+      if (!telemetry.success()) {
           lines.add("§8» §7Error: §f" + failure);
       }
    }

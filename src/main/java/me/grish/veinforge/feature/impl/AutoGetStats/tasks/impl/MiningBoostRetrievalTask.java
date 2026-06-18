@@ -15,53 +15,53 @@ import java.util.regex.Pattern;
  */
 public class MiningBoostRetrievalTask extends AbstractInventoryTask<Integer> {
 
-   private final Minecraft mc = Minecraft.getInstance();
-   private final Clock timer = new Clock();
-   private Integer speedBoost;
+    private final Minecraft mc = Minecraft.getInstance();
+    private final Clock timer = new Clock();
+    private Integer speedBoost;
 
-   @Override
-   public void init() {
-      taskStatus = TaskStatus.RUNNING;
+    @Override
+    public void init() {
+        taskStatus = TaskStatus.RUNNING;
 
-      InventoryUtil.holdItem(VeinForge.config().general.miningTool);
+        InventoryUtil.holdItem(VeinForge.config().general.miningTool);
 
-      if (mc.gui.screen() != null) {
-         InventoryUtil.closeScreen();
-      }
+        if (mc.gui.screen() != null) {
+            InventoryUtil.closeScreen();
+        }
 
-      if (mc.player != null) {
-         mc.player.connection.sendCommand("hotm");
-      }
-      timer.schedule(1000);
-   }
+        if (mc.player != null) {
+            mc.player.connection.sendCommand("hotm");
+        }
+        timer.schedule(1000);
+    }
 
-   @Override
-   public void onTick() {
-      if (!timer.passed() && timer.isScheduled()) {
-         return;
-      }
+    @Override
+    public void onTick() {
+        if (!timer.passed() && timer.isScheduled()) {
+            return;
+        }
 
-      final int speedBoostSlot = InventoryUtil.getSlotIdOfItemInContainer("Mining Speed Boost");
-      final String speedBoostLore = String.join(" ", InventoryUtil.getLoreOfItemInContainer(speedBoostSlot));
+        final int speedBoostSlot = InventoryUtil.getSlotIdOfItemInContainer("Mining Speed Boost");
+        final String speedBoostLore = String.join(" ", InventoryUtil.getLoreOfItemInContainer(speedBoostSlot));
 
-      final Matcher matcher = Pattern.compile("\\+(\\d+)%").matcher(speedBoostLore);
-      if (matcher.find()) {
-         speedBoost = Integer.parseInt(matcher.group(1));
-         taskStatus = TaskStatus.SUCCESS;
-         return;
-      }
+        final Matcher matcher = Pattern.compile("\\+(\\d+)%").matcher(speedBoostLore);
+        if (matcher.find()) {
+            speedBoost = Integer.parseInt(matcher.group(1));
+            taskStatus = TaskStatus.SUCCESS;
+            return;
+        }
 
-      taskStatus = TaskStatus.FAILURE;
-      error = "Cannot parse speed boost. You may have scrolled up in your HOTM GUI.";
-   }
+        taskStatus = TaskStatus.FAILURE;
+        error = "Cannot parse speed boost. You may have scrolled up in your HOTM GUI.";
+    }
 
-   @Override
-   public void end() {
-      InventoryUtil.closeScreen();
-   }
+    @Override
+    public void end() {
+        InventoryUtil.closeScreen();
+    }
 
-   @Override
-   public Integer getResult() {
-      return speedBoost;
-   }
+    @Override
+    public Integer getResult() {
+        return speedBoost;
+    }
 }

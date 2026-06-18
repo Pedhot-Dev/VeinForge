@@ -5,12 +5,12 @@ import me.grish.veinforge.feature.AbstractFeature;
 
 public class AutoSell extends AbstractFeature {
 
-   @Getter
-   public static AutoSell instance = new AutoSell();
+    @Getter
+    public static AutoSell instance = new AutoSell();
 
-   @Override
-   public String getName() {
-      return "AutoSell";
-   }
+    @Override
+    public String getName() {
+        return "AutoSell";
+    }
 
 }

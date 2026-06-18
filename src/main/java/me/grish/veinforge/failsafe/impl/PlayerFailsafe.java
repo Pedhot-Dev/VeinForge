@@ -18,89 +18,89 @@ import java.util.stream.StreamSupport;
 // TODO: Check if it causes excessive lag before re-implementing!
 public class PlayerFailsafe extends AbstractFailsafe {
 
-   @Getter
-   private static final PlayerFailsafe instance = new PlayerFailsafe();
-   private final Minecraft mc = Minecraft.getInstance();
-   private final Map<Entity, Long> playerStaringTimes = new HashMap<>();
+    @Getter
+    private static final PlayerFailsafe instance = new PlayerFailsafe();
+    private final Minecraft mc = Minecraft.getInstance();
+    private final Map<Entity, Long> playerStaringTimes = new HashMap<>();
 
-   @Override
-   public String getName() {
-      return "PlayerFailsafe";
-   }
+    @Override
+    public String getName() {
+        return "PlayerFailsafe";
+    }
 
-   @Override
-   public Failsafe getFailsafeType() {
-      return Failsafe.TELEPORT;
-   }
+    @Override
+    public Failsafe getFailsafeType() {
+        return Failsafe.TELEPORT;
+    }
 
-   @Override
-   public int getPriority() {
-      return 5;
-   }
+    @Override
+    public int getPriority() {
+        return 5;
+    }
 
-   @Override
-   public boolean onTick() {
-      if (mc.level == null || mc.player == null) return false;
+    @Override
+    public boolean onTick() {
+        if (mc.level == null || mc.player == null) return false;
 
-      List<Entity> players = StreamSupport.stream(mc.level.entitiesForRendering().spliterator(), false).filter(
-              (entity) -> entity instanceof AbstractClientPlayer && entity != mc.player && !EntityUtil.isNpc(entity)
-      ).collect(Collectors.toList());
+        List<Entity> players = StreamSupport.stream(mc.level.entitiesForRendering().spliterator(), false).filter(
+                (entity) -> entity instanceof AbstractClientPlayer && entity != mc.player && !EntityUtil.isNpc(entity)
+        ).collect(Collectors.toList());
 
-      boolean playerBlocking = false;
-      long currentTime = System.currentTimeMillis();
-      playerStaringTimes.keySet().removeIf(player -> !players.contains(player));
+        boolean playerBlocking = false;
+        long currentTime = System.currentTimeMillis();
+        playerStaringTimes.keySet().removeIf(player -> !players.contains(player));
 
-      for (Entity player : players) {
-         double distanceSquared = player.blockPosition().distSqr(mc.player.blockPosition());
-         boolean isBlocking = distanceSquared < 3;
-         boolean isLookingAtUs = isPlayerLookingAtMe(player);
+        for (Entity player : players) {
+            double distanceSquared = player.blockPosition().distSqr(mc.player.blockPosition());
+            boolean isBlocking = distanceSquared < 3;
+            boolean isLookingAtUs = isPlayerLookingAtMe(player);
 
-         if (isLookingAtUs && isBlocking) {
-            if (!playerStaringTimes.containsKey(player)) {
-               playerStaringTimes.put(player, currentTime);
-               return false;
+            if (isLookingAtUs && isBlocking) {
+                if (!playerStaringTimes.containsKey(player)) {
+                    playerStaringTimes.put(player, currentTime);
+                    return false;
+                }
+
+                long staringDuration = currentTime - playerStaringTimes.get(player);
+
+                if (staringDuration > 1000) {
+                    playerBlocking = true;
+                    break;
+                }
+            } else {
+                playerStaringTimes.remove(player);
             }
+        }
 
-            long staringDuration = currentTime - playerStaringTimes.get(player);
+        return playerBlocking;
+    }
 
-            if (staringDuration > 1000) {
-               playerBlocking = true;
-               break;
-            }
-         } else {
-            playerStaringTimes.remove(player);
-         }
-      }
+    private boolean isPlayerLookingAtMe(Entity player) {
+        Vec3 lookVec = player.getViewVector(1.0F);
+        Vec3 playerToMeVec = new Vec3(
+                mc.player.getX() - player.getX(),
+                mc.player.getBoundingBox().minY + mc.player.getEyeHeight(mc.player.getPose()) - (player.getY() + player.getEyeHeight(player.getPose())),
+                mc.player.getZ() - player.getZ()
+        );
 
-      return playerBlocking;
-   }
+        double d0 = playerToMeVec.length();
+        playerToMeVec = playerToMeVec.normalize();
 
-   private boolean isPlayerLookingAtMe(Entity player) {
-      Vec3 lookVec = player.getViewVector(1.0F);
-      Vec3 playerToMeVec = new Vec3(
-              mc.player.getX() - player.getX(),
-              mc.player.getBoundingBox().minY + mc.player.getEyeHeight(mc.player.getPose()) - (player.getY() + player.getEyeHeight(player.getPose())),
-              mc.player.getZ() - player.getZ()
-      );
+        double dot = lookVec.dot(playerToMeVec);
+        double fovCosine = Math.cos(Math.toRadians(30F));
+        return dot > fovCosine;
+    }
 
-      double d0 = playerToMeVec.length();
-      playerToMeVec = playerToMeVec.normalize();
+    @Override
+    public boolean onChat(String message) {
+        return message.toLowerCase().contains(mc.getUser().getName().toLowerCase());
+    }
 
-      double dot = lookVec.dot(playerToMeVec);
-      double fovCosine = Math.cos(Math.toRadians(30F));
-      return dot > fovCosine;
-   }
-
-   @Override
-   public boolean onChat(String message) {
-      return message.toLowerCase().contains(mc.getUser().getName().toLowerCase());
-   }
-
-   @Override
-   public boolean react() {
-      warn("Stopping macro due to player nearby.");
-      MacroManager.getInstance().disable();
-      return true;
-   }
+    @Override
+    public boolean react() {
+        warn("Stopping macro due to player nearby.");
+        MacroManager.getInstance().disable();
+        return true;
+    }
 
 }

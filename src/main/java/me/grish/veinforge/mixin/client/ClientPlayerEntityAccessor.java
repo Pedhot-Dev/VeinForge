@@ -10,15 +10,15 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Entity.class)
 public interface ClientPlayerEntityAccessor {
 
-   @Accessor("yRotO")
-   float getLastYaw();
+    @Accessor("yRotO")
+    float getLastYaw();
 
-   @Accessor("yRotO")
-   void setLastYaw(float yaw);
+    @Accessor("yRotO")
+    void setLastYaw(float yaw);
 
-   @Accessor("xRotO")
-   float getLastPitch();
+    @Accessor("xRotO")
+    float getLastPitch();
 
-   @Accessor("xRotO")
-   void setLastPitch(float pitch);
+    @Accessor("xRotO")
+    void setLastPitch(float pitch);
 }

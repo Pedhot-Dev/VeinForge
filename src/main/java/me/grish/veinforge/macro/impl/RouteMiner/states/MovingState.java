@@ -23,94 +23,94 @@ import java.util.List;
  */
 public class MovingState implements RouteMinerMacroState {
 
-   private static final Minecraft mc = Minecraft.getInstance();
-   private final Clock etherWarpDelay = new Clock();
-   private RouteWaypoint routeTarget;
-   private boolean hasClicked = false;
+    private static final Minecraft mc = Minecraft.getInstance();
+    private final Clock etherWarpDelay = new Clock();
+    private RouteWaypoint routeTarget;
+    private boolean hasClicked = false;
 
-   private boolean isWalking = false;
+    private boolean isWalking = false;
 
-   @Override
-   public void onStart(RouteMinerMacro macro) {
-      log("Entering Moving State");
-      Route route = RouteHandler.getInstance().getSelectedRoute();
-      routeTarget = route.get(macro.getRouteIndex() + 1);
+    @Override
+    public void onStart(RouteMinerMacro macro) {
+        log("Entering Moving State");
+        Route route = RouteHandler.getInstance().getSelectedRoute();
+        routeTarget = route.get(macro.getRouteIndex() + 1);
 
-      if (routeTarget.getTransportMethod() == WaypointType.ETHERWARP) {
-         InventoryUtil.holdItem("Aspect of the Void");
-         KeyBindUtil.setKeyBindState(mc.options.keyShift, true);
-         List<Vec3> points = BlockUtil.bestPointsOnBestSide(routeTarget.toBlockPos());
-         Vec3 point = routeTarget.toVec3d().add(0.5, 0.5, 0.5);
+        if (routeTarget.getTransportMethod() == WaypointType.ETHERWARP) {
+            InventoryUtil.holdItem("Aspect of the Void");
+            KeyBindUtil.setKeyBindState(mc.options.keyShift, true);
+            List<Vec3> points = BlockUtil.bestPointsOnBestSide(routeTarget.toBlockPos());
+            Vec3 point = routeTarget.toVec3d().add(0.5, 0.5, 0.5);
 
-         if (!points.isEmpty()) {
-            point = points.get(0);
-         }
-
-         RotationHandler.getInstance().easeTo(new RotationConfiguration(
-                 AngleUtil.getRotation(point),
-                 VeinForge.config().delays.delayAutoAotvEtherwarpLookDelay,
-                 null
-         ));
-      } else {
-         KeyBindUtil.setKeyBindState(mc.options.keyShift, false);
-      }
-   }
-
-   @Override
-   public RouteMinerMacroState onTick(RouteMinerMacro macro) {
-      switch (routeTarget.getTransportMethod()) {
-         case ETHERWARP:
-            if (RotationHandler.getInstance().isEnabled()) {
-               return this;
+            if (!points.isEmpty()) {
+                point = points.get(0);
             }
 
-            if (!hasClicked) {
-               KeyBindUtil.rightClick();
-               etherWarpDelay.schedule(250);
-               hasClicked = true;
-               return this;
-            }
+            RotationHandler.getInstance().easeTo(new RotationConfiguration(
+                    AngleUtil.getRotation(point),
+                    VeinForge.config().delays.delayAutoAotvEtherwarpLookDelay,
+                    null
+            ));
+        } else {
+            KeyBindUtil.setKeyBindState(mc.options.keyShift, false);
+        }
+    }
 
-            if (etherWarpDelay.passed()) {
-               macro.setRouteIndex(macro.getRouteIndex() + 1);
-               return new MovingState();
-            }
+    @Override
+    public RouteMinerMacroState onTick(RouteMinerMacro macro) {
+        switch (routeTarget.getTransportMethod()) {
+            case ETHERWARP:
+                if (RotationHandler.getInstance().isEnabled()) {
+                    return this;
+                }
 
-            return this;
-         case WALK:
-            if (isWalking) {
-               if (
-                       Pathfinder.getInstance().completedPathTo(routeTarget.toBlockPos()) ||
-                               (!Pathfinder.getInstance().isRunning() && Pathfinder.getInstance().succeeded()) ||
-                               PlayerUtil.getBlockStandingOn().equals(routeTarget.toBlockPos())
-               ) {
-                  macro.setRouteIndex(macro.getRouteIndex() + 1);
-                  return new MovingState();
-               }
+                if (!hasClicked) {
+                    KeyBindUtil.rightClick();
+                    etherWarpDelay.schedule(250);
+                    hasClicked = true;
+                    return this;
+                }
 
-               if (Pathfinder.getInstance().failed()) {
-                  macro.disable("Pathfinding failed");
-                  return null;
-               }
+                if (etherWarpDelay.passed()) {
+                    macro.setRouteIndex(macro.getRouteIndex() + 1);
+                    return new MovingState();
+                }
 
-               return this;
-            }
+                return this;
+            case WALK:
+                if (isWalking) {
+                    if (
+                            Pathfinder.getInstance().completedPathTo(routeTarget.toBlockPos()) ||
+                                    (!Pathfinder.getInstance().isRunning() && Pathfinder.getInstance().succeeded()) ||
+                                    PlayerUtil.getBlockStandingOn().equals(routeTarget.toBlockPos())
+                    ) {
+                        macro.setRouteIndex(macro.getRouteIndex() + 1);
+                        return new MovingState();
+                    }
 
-            Pathfinder.getInstance().queue(routeTarget.toBlockPos());
-            Pathfinder.getInstance().start();
-            isWalking = true;
+                    if (Pathfinder.getInstance().failed()) {
+                        macro.disable("Pathfinding failed");
+                        return null;
+                    }
 
-            break;
-         default:
-            return new MiningState();
-      }
+                    return this;
+                }
 
-      return this;
-   }
+                Pathfinder.getInstance().queue(routeTarget.toBlockPos());
+                Pathfinder.getInstance().start();
+                isWalking = true;
 
-   @Override
-   public void onEnd(RouteMinerMacro macro) {
-      log("Exiting Moving State");
-   }
+                break;
+            default:
+                return new MiningState();
+        }
+
+        return this;
+    }
+
+    @Override
+    public void onEnd(RouteMinerMacro macro) {
+        log("Exiting Moving State");
+    }
 
 }

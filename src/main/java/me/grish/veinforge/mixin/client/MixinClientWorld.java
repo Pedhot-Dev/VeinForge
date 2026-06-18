@@ -14,47 +14,47 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientLevel.class)
 public class MixinClientWorld {
 
-   @Inject(
-           method = "addParticle(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDDDD)V",
-           at = @At("HEAD"),
-           cancellable = true
-   )
-   private void veinforge$onAddParticle(
-           ParticleOptions effect,
-           boolean longDistance,
-           boolean alwaysSpawn,
-           double x,
-           double y,
-           double z,
-           double velocityX,
-           double velocityY,
-           double velocityZ,
-           CallbackInfo ci
-   ) {
-      SpawnParticleEvent event = SpawnParticleEvent.fire(
-              effect.getType(),
-              longDistance,
-              x, y, z,
-              velocityX, velocityY, velocityZ
-      );
-      if (event.isCancelled()) {
-         ci.cancel();
-      }
-   }
+    @Inject(
+            method = "addParticle(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDDDD)V",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void veinforge$onAddParticle(
+            ParticleOptions effect,
+            boolean longDistance,
+            boolean alwaysSpawn,
+            double x,
+            double y,
+            double z,
+            double velocityX,
+            double velocityY,
+            double velocityZ,
+            CallbackInfo ci
+    ) {
+        SpawnParticleEvent event = SpawnParticleEvent.fire(
+                effect.getType(),
+                longDistance,
+                x, y, z,
+                velocityX, velocityY, velocityZ
+        );
+        if (event.isCancelled()) {
+            ci.cancel();
+        }
+    }
 
-   @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
-   private void veinforge$onAddEntity(Entity entity, CallbackInfo ci) {
-      if (entity instanceof LivingEntity livingEntity) {
-         UpdateEntityEvent.fire(new UpdateEntityEvent(livingEntity));
-      }
-   }
+    @Inject(method = "addEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
+    private void veinforge$onAddEntity(Entity entity, CallbackInfo ci) {
+        if (entity instanceof LivingEntity livingEntity) {
+            UpdateEntityEvent.fire(new UpdateEntityEvent(livingEntity));
+        }
+    }
 
-   @Inject(method = "removeEntity(ILnet/minecraft/world/entity/Entity$RemovalReason;)V", at = @At("HEAD"))
-   private void veinforge$onRemoveEntity(int entityId, Entity.RemovalReason removalReason, CallbackInfo ci) {
-      ClientLevel world = (ClientLevel) (Object) this;
-      Entity entity = world.getEntity(entityId);
-      if (entity instanceof LivingEntity livingEntity) {
-         UpdateEntityEvent.fire(new UpdateEntityEvent(livingEntity, UpdateEntityEvent.TYPE_DESPAWNED));
-      }
-   }
+    @Inject(method = "removeEntity(ILnet/minecraft/world/entity/Entity$RemovalReason;)V", at = @At("HEAD"))
+    private void veinforge$onRemoveEntity(int entityId, Entity.RemovalReason removalReason, CallbackInfo ci) {
+        ClientLevel world = (ClientLevel) (Object) this;
+        Entity entity = world.getEntity(entityId);
+        if (entity instanceof LivingEntity livingEntity) {
+            UpdateEntityEvent.fire(new UpdateEntityEvent(livingEntity, UpdateEntityEvent.TYPE_DESPAWNED));
+        }
+    }
 }

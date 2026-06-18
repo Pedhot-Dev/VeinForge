@@ -5,12 +5,12 @@ import me.grish.veinforge.feature.AbstractFeature;
 
 public class WorldScanner extends AbstractFeature {
 
-   @Getter
-   public static WorldScanner instance = new WorldScanner();
+    @Getter
+    public static WorldScanner instance = new WorldScanner();
 
-   @Override
-   public String getName() {
-      return "WorldScanner";
-   }
+    @Override
+    public String getName() {
+        return "WorldScanner";
+    }
 
 }

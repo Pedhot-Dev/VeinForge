@@ -19,14 +19,14 @@ public class GlacialCommissionHUD extends TextHud {
    private static final GlacialCommissionHUD instance = new GlacialCommissionHUD();
     private final transient GlacialMacro glacialMacro = GlacialMacro.getInstance();
 
-   public static GlacialCommissionHUD getInstance() {
-      return instance;
-   }
-
    public GlacialCommissionHUD() {
       super();
       this.x = 5;
       this.y = 5;
+   }
+
+   public static GlacialCommissionHUD getInstance() {
+      return instance;
    }
 
    @Override

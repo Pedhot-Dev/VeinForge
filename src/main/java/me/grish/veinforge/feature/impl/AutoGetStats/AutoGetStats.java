@@ -13,62 +13,62 @@ import java.util.Queue;
  */
 public class AutoGetStats extends AbstractFeature {
 
-   private static AutoGetStats instance;
+    private static AutoGetStats instance;
 
-   private final Queue<AbstractInventoryTask<?>> taskQueue = new ArrayDeque<>();
-   private final Clock delay = new Clock();
-   private AbstractInventoryTask<?> currentTask;
+    private final Queue<AbstractInventoryTask<?>> taskQueue = new ArrayDeque<>();
+    private final Clock delay = new Clock();
+    private AbstractInventoryTask<?> currentTask;
 
-   public static AutoGetStats getInstance() {
-      if (instance == null) {
-         instance = new AutoGetStats();
-      }
-      return instance;
-   }
+    public static AutoGetStats getInstance() {
+        if (instance == null) {
+            instance = new AutoGetStats();
+        }
+        return instance;
+    }
 
-   @Override
-   public String getName() {
-      return "AutoGetStats";
-   }
+    @Override
+    public String getName() {
+        return "AutoGetStats";
+    }
 
-   @Override
-   protected void onTick() {
-      if (!enabled || mc.player == null || mc.level == null)
-         return;
+    @Override
+    protected void onTick() {
+        if (!enabled || mc.player == null || mc.level == null)
+            return;
 
-      if (currentTask != null) {
-         currentTask.onTick();
+        if (currentTask != null) {
+            currentTask.onTick();
 
-         if (currentTask.getTaskStatus().isFailure() || currentTask.getTaskStatus().isSuccessful()) {
-            currentTask.end();
-            currentTask = null;
-            delay.schedule(1000);  // 1-second delay between each task
-         }
-      } else if (delay.isScheduled() && delay.passed() && !taskQueue.isEmpty()) {
-         currentTask = taskQueue.poll();
-         currentTask.init();
-      }
-   }
+            if (currentTask.getTaskStatus().isFailure() || currentTask.getTaskStatus().isSuccessful()) {
+                currentTask.end();
+                currentTask = null;
+                delay.schedule(1000);  // 1-second delay between each task
+            }
+        } else if (delay.isScheduled() && delay.passed() && !taskQueue.isEmpty()) {
+            currentTask = taskQueue.poll();
+            currentTask.init();
+        }
+    }
 
-   /**
-    * Adds a new task to the queue and starts it immediately if idle.
-    */
-   public void startTask(AbstractInventoryTask<?> task) {
+    /**
+     * Adds a new task to the queue and starts it immediately if idle.
+     */
+    public void startTask(AbstractInventoryTask<?> task) {
 
-      if (task == null) return;
-      taskQueue.add(task);
+        if (task == null) return;
+        taskQueue.add(task);
 
-      // If no current task running, start this one immediately
-      if (currentTask == null) {
-         currentTask = taskQueue.poll();
-         currentTask.init();
-         this.enabled = true;
-         this.start();
-      }
-   }
+        // If no current task running, start this one immediately
+        if (currentTask == null) {
+            currentTask = taskQueue.poll();
+            currentTask.init();
+            this.enabled = true;
+            this.start();
+        }
+    }
 
-   public boolean hasFinishedAllTasks() {
-      return currentTask == null && taskQueue.isEmpty();
-   }
+    public boolean hasFinishedAllTasks() {
+        return currentTask == null && taskQueue.isEmpty();
+    }
 }
 

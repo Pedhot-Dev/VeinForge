@@ -28,238 +28,238 @@ import java.util.Random;
  */
 public class BreakingState implements BlockMinerState {
 
-   /**
-    * Minimum distance required between the player and block to trigger walking behavior.
-    */
-   private static final double MIN_WALK_DISTANCE = 0.2;
-   /**
-    * The maximum allowed distance for the player to attempt to mine a block.
-    */
-   private static final double MAX_MINE_DISTANCE = 4;
-   /**
-    * Number of ticks after which a failsafe is triggered if mining takes too long.
-    */
-   private static final int FAILSAFE_TICKS = 40;
-   /**
-    * Time in milliseconds the player can look away from the block before switching targets.
-    */
-   private static final int LOOK_AWAY_THRESHOLD_MS = 500;
-   /**
-    * Reference to the Minecraft client instance.
-    */
-   private final Minecraft mc = Minecraft.getInstance();
-   /**
-    * Random number generator for introducing slight variability (e.g., in targeting or movement).
-    */
-   private final Random random = new Random();
-   /**
-    * Timer used to track how long the player has been looking away from the target block.
-    */
-   private Clock lookAwayTimer;
+    /**
+     * Minimum distance required between the player and block to trigger walking behavior.
+     */
+    private static final double MIN_WALK_DISTANCE = 0.2;
+    /**
+     * The maximum allowed distance for the player to attempt to mine a block.
+     */
+    private static final double MAX_MINE_DISTANCE = 4;
+    /**
+     * Number of ticks after which a failsafe is triggered if mining takes too long.
+     */
+    private static final int FAILSAFE_TICKS = 40;
+    /**
+     * Time in milliseconds the player can look away from the block before switching targets.
+     */
+    private static final int LOOK_AWAY_THRESHOLD_MS = 500;
+    /**
+     * Reference to the Minecraft client instance.
+     */
+    private final Minecraft mc = Minecraft.getInstance();
+    /**
+     * Random number generator for introducing slight variability (e.g., in targeting or movement).
+     */
+    private final Random random = new Random();
+    /**
+     * Timer used to track how long the player has been looking away from the target block.
+     */
+    private Clock lookAwayTimer;
 
-   /**
-    * Flag indicating whether the player was looking away from the block in the previous tick.
-    */
-   private boolean wasLookingAway = false;
+    /**
+     * Flag indicating whether the player was looking away from the block in the previous tick.
+     */
+    private boolean wasLookingAway = false;
 
-   /**
-    * Number of ticks the player has been attempting to break the current block.
-    */
-   private int breakAttemptTime;
+    /**
+     * Number of ticks the player has been attempting to break the current block.
+     */
+    private int breakAttemptTime;
 
-   /**
-    * Estimated number of ticks required to break the current block.
-    */
-   private int miningTime;
+    /**
+     * Estimated number of ticks required to break the current block.
+     */
+    private int miningTime;
 
-   /**
-    * The exact point on the block being targeted for mining.
-    */
-   private Vec3 targetPoint;
+    /**
+     * The exact point on the block being targeted for mining.
+     */
+    private Vec3 targetPoint;
 
-   /**
-    * The block position that the player is walking toward if not in range to mine.
-    */
-   private Vec3 walkingDestinationBlock;
+    /**
+     * The block position that the player is walking toward if not in range to mine.
+     */
+    private Vec3 walkingDestinationBlock;
 
-   /**
-    * Indicates whether the player is currently walking toward the target block.
-    */
-   private boolean isWalking;
+    /**
+     * Indicates whether the player is currently walking toward the target block.
+     */
+    private boolean isWalking;
 
 
-   @Override
-   public void onStart(BlockMiner miner) {
-      log("Entering Breaking State");
-      breakAttemptTime = 0;
-      isWalking = false;
+    @Override
+    public void onStart(BlockMiner miner) {
+        log("Entering Breaking State");
+        breakAttemptTime = 0;
+        isWalking = false;
 
-      lookAwayTimer = new Clock();
-      wasLookingAway = false;
+        lookAwayTimer = new Clock();
+        wasLookingAway = false;
 
-      miningTime = BlockUtil.getMiningTime(
-              mc.level.getBlockState(miner.getTargetBlockPos()),
-              miner.getMiningSpeed()
-      );
+        miningTime = BlockUtil.getMiningTime(
+                mc.level.getBlockState(miner.getTargetBlockPos()),
+                miner.getMiningSpeed()
+        );
 
-      // Setup rotation to look at the block
-      RotationHandler.getInstance().stop();
-      initializeRotation(miner);
-   }
+        // Setup rotation to look at the block
+        RotationHandler.getInstance().stop();
+        initializeRotation(miner);
+    }
 
-   @Override
-   public BlockMinerState onTick(BlockMiner miner) {
-      // Handle key presses for mining
-      handleKeybinds();
+    @Override
+    public BlockMinerState onTick(BlockMiner miner) {
+        // Handle key presses for mining
+        handleKeybinds();
 
-      // Handle walking toward block if needed
-      if (isWalking) {
-         handleWalking();
-      }
+        // Handle walking toward block if needed
+        if (isWalking) {
+            handleWalking();
+        }
 
-      // Handle precision mining
-      if (miner.getTargetParticlePos() != null) {
-         RotationHandler.getInstance().easeTo(new RotationConfiguration(new Target(miner.getTargetParticlePos()), 800, null).followTarget(true));
-         miner.setTargetParticlePos(null);
-      }
+        // Handle precision mining
+        if (miner.getTargetParticlePos() != null) {
+            RotationHandler.getInstance().easeTo(new RotationConfiguration(new Target(miner.getTargetParticlePos()), 800, null).followTarget(true));
+            miner.setTargetParticlePos(null);
+        }
 
-      // Safety mechanism: if we've been trying to break for too long, reset
-      if (++this.breakAttemptTime > this.miningTime + FAILSAFE_TICKS) {
-         logError("Stuck while mining, return to starting state");
-         return new StartingState();
-      }
-
-      // Safety mechanism: if we're looking away from target block, reset
-      BlockPos currentLookingAt = BlockUtil.getBlockLookingAt();
-      boolean isLookingAtTarget = miner.getTargetBlockPos().equals(currentLookingAt);
-      if (!isLookingAtTarget) {
-         if (!wasLookingAway) {
-            lookAwayTimer.schedule(LOOK_AWAY_THRESHOLD_MS);
-            wasLookingAway = true;
-         } else if (lookAwayTimer.passed()) {
-            log("Player looked away from target block for too long, choosing new block");
+        // Safety mechanism: if we've been trying to break for too long, reset
+        if (++this.breakAttemptTime > this.miningTime + FAILSAFE_TICKS) {
+            logError("Stuck while mining, return to starting state");
             return new StartingState();
-         }
-      } else {
-         wasLookingAway = false;
-      }
+        }
 
-      // After breaking a block, restart the whole cycle again
-      Block detectedBlockType = mc.level.getBlockState(miner.getTargetBlockPos()).getBlock();
-      if (!detectedBlockType.equals(miner.getTargetBlockType())) {
-         return new StartingState();
-      }
+        // Safety mechanism: if we're looking away from target block, reset
+        BlockPos currentLookingAt = BlockUtil.getBlockLookingAt();
+        boolean isLookingAtTarget = miner.getTargetBlockPos().equals(currentLookingAt);
+        if (!isLookingAtTarget) {
+            if (!wasLookingAway) {
+                lookAwayTimer.schedule(LOOK_AWAY_THRESHOLD_MS);
+                wasLookingAway = true;
+            } else if (lookAwayTimer.passed()) {
+                log("Player looked away from target block for too long, choosing new block");
+                return new StartingState();
+            }
+        } else {
+            wasLookingAway = false;
+        }
 
-      return this;
-   }
+        // After breaking a block, restart the whole cycle again
+        Block detectedBlockType = mc.level.getBlockState(miner.getTargetBlockPos()).getBlock();
+        if (!detectedBlockType.equals(miner.getTargetBlockType())) {
+            return new StartingState();
+        }
 
-   @Override
-   public void onEnd(BlockMiner miner) {
-      RotationHandler.getInstance().stop();
-      log("Exiting Breaking State");
-   }
+        return this;
+    }
 
-   /**
-    * Handles key bindings for mining.
-    * Sets attack key to continuously mine and manages sneak state.
-    */
-   private void handleKeybinds() {
-      // Hold left-click to break blocks
-      KeyBindUtil.setKeyBindState(mc.options.keyAttack, true);
+    @Override
+    public void onEnd(BlockMiner miner) {
+        RotationHandler.getInstance().stop();
+        log("Exiting Breaking State");
+    }
 
-      if (!isWalking) {
-         KeyBindUtil.setKeyBindState(mc.options.keyShift, VeinForge.config().general.sneakWhileMining);
-         KeyBindUtil.setKeyBindState(mc.options.keyUp, false);
-      }
-   }
+    /**
+     * Handles key bindings for mining.
+     * Sets attack key to continuously mine and manages sneak state.
+     */
+    private void handleKeybinds() {
+        // Hold left-click to break blocks
+        KeyBindUtil.setKeyBindState(mc.options.keyAttack, true);
 
-   /**
-    * Handles walking mechanics when the player needs to move toward target block.
-    * Uses strafing utility to navigate toward the block.
-    */
-   private void handleWalking() {
-      // Calculate distance to walking destination and mining point
-      double walkingDistance = 999;
-      if (walkingDestinationBlock != null)
-         walkingDistance = Math.hypot(this.walkingDestinationBlock.x - mc.player.getX(),
-                 this.walkingDestinationBlock.z - mc.player.getZ());
+        if (!isWalking) {
+            KeyBindUtil.setKeyBindState(mc.options.keyShift, VeinForge.config().general.sneakWhileMining);
+            KeyBindUtil.setKeyBindState(mc.options.keyUp, false);
+        }
+    }
 
-      double miningDistance = PlayerUtil.getPlayerEyePos().distanceTo(this.targetPoint);
+    /**
+     * Handles walking mechanics when the player needs to move toward target block.
+     * Uses strafing utility to navigate toward the block.
+     */
+    private void handleWalking() {
+        // Calculate distance to walking destination and mining point
+        double walkingDistance = 999;
+        if (walkingDestinationBlock != null)
+            walkingDistance = Math.hypot(this.walkingDestinationBlock.x - mc.player.getX(),
+                    this.walkingDestinationBlock.z - mc.player.getZ());
 
-      // Move toward target if too far away
-      if (walkingDistance > MIN_WALK_DISTANCE && miningDistance > MAX_MINE_DISTANCE) {
-         KeyBindUtil.holdThese(mc.options.keyUp, mc.options.keyShift);
-      } else {
-         // Close enough, stop walking
-         isWalking = false;
-         this.walkingDestinationBlock = null;
-      }
-   }
+        double miningDistance = PlayerUtil.getPlayerEyePos().distanceTo(this.targetPoint);
 
-   /**
-    * Sets up rotation to look at the target block.
-    * Also determines if the player needs to walk toward the block.
-    *
-    * @param miner The BlockMiner instance
-    */
-   private void initializeRotation(BlockMiner miner) {
-      // Get best points to look at on the block
-      List<Vec3> points = BlockUtil.bestPointsOnBestSide(miner.getTargetBlockPos());
+        // Move toward target if too far away
+        if (walkingDistance > MIN_WALK_DISTANCE && miningDistance > MAX_MINE_DISTANCE) {
+            KeyBindUtil.holdThese(mc.options.keyUp, mc.options.keyShift);
+        } else {
+            // Close enough, stop walking
+            isWalking = false;
+            this.walkingDestinationBlock = null;
+        }
+    }
 
-      // Handle case where no valid points are found
-      if (points.isEmpty()) {
-         logError("Cannot find points to look at. Returning to STARTING state.");
-         miner.setError(BlockMiner.BlockMinerError.NO_POINTS_FOUND);
-         miner.stop();
-         return;
-      }
+    /**
+     * Sets up rotation to look at the target block.
+     * Also determines if the player needs to walk toward the block.
+     *
+     * @param miner The BlockMiner instance
+     */
+    private void initializeRotation(BlockMiner miner) {
+        // Get best points to look at on the block
+        List<Vec3> points = BlockUtil.bestPointsOnBestSide(miner.getTargetBlockPos());
 
-      // Select first point as target
-      this.targetPoint = points.get(0);
+        // Handle case where no valid points are found
+        if (points.isEmpty()) {
+            logError("Cannot find points to look at. Returning to STARTING state.");
+            miner.setError(BlockMiner.BlockMinerError.NO_POINTS_FOUND);
+            miner.stop();
+            return;
+        }
 
-      // Configure rotation to look at target
-      RotationHandler.getInstance().stop();
-      RotationHandler.getInstance().queueRotation(
-              new RotationConfiguration(
-                      new Target(targetPoint),
-                      VeinForge.config().getRandomRotationTime(),
-                      null
-              )
-      );
+        // Select first point as target
+        this.targetPoint = points.get(0);
 
-      // Sometimes randomly choose a different point on the block (for variety)
-      if (random.nextBoolean() && VeinForge.config().general.randomizedRotations) {
-         int halfwayMark = points.size() / 2;
-         this.targetPoint = points.get(random.nextInt(halfwayMark) + halfwayMark - 1);
+        // Configure rotation to look at target
+        RotationHandler.getInstance().stop();
+        RotationHandler.getInstance().queueRotation(
+                new RotationConfiguration(
+                        new Target(targetPoint),
+                        VeinForge.config().getRandomRotationTime(),
+                        null
+                )
+        );
 
-         RotationHandler.getInstance().queueRotation(
-                 new RotationConfiguration(
-                         new Target(targetPoint),
-                         VeinForge.config().getRandomRotationTime() * 2L,
-                         null
-                 )
-         );
-      }
+        // Sometimes randomly choose a different point on the block (for variety)
+        if (random.nextBoolean() && VeinForge.config().general.randomizedRotations) {
+            int halfwayMark = points.size() / 2;
+            this.targetPoint = points.get(random.nextInt(halfwayMark) + halfwayMark - 1);
 
-      RotationHandler.getInstance().start();
+            RotationHandler.getInstance().queueRotation(
+                    new RotationConfiguration(
+                            new Target(targetPoint),
+                            VeinForge.config().getRandomRotationTime() * 2L,
+                            null
+                    )
+            );
+        }
 
-      // Determine if the player needs to walk toward block (too far away)
-      if (this.targetPoint != null && PlayerUtil.getPlayerEyePos().distanceTo(this.targetPoint) > MAX_MINE_DISTANCE) {
-         isWalking = true;
-         Vec3 vec = AngleUtil.getVectorForRotation(AngleUtil.getRotationYaw(this.targetPoint));
+        RotationHandler.getInstance().start();
 
-         // Find walkable block closest to target
-         if (mc.level.isEmptyBlock(new BlockPos((int) (mc.player.position().x + vec.x), (int) (mc.player.position().y + vec.y), (int) (mc.player.position().z + vec.z)))) {
-            // Note: vec.add in 1.8.9 returns a new Vec3. In Fabric Vec3d.add returns a new Vec3d.
-            // However, BlockPos constructor taking Vec3d is not standard in vanilla.
-            // I adjusted the BlockPos construction above to be safe using coords.
+        // Determine if the player needs to walk toward block (too far away)
+        if (this.targetPoint != null && PlayerUtil.getPlayerEyePos().distanceTo(this.targetPoint) > MAX_MINE_DISTANCE) {
+            isWalking = true;
+            Vec3 vec = AngleUtil.getVectorForRotation(AngleUtil.getRotationYaw(this.targetPoint));
 
-            this.walkingDestinationBlock = BlockUtil.getWalkableBlocksAround(PlayerUtil.getBlockStandingOn())
-                                                   .stream()
-                                                   .min(Comparator.comparingDouble(miner.getTargetBlockPos()::distSqr))
-                                                   .map(b -> new Vec3(b.getX() + 0.5, b.getY(), b.getZ() + 0.5))
-                                                   .orElse(null);
-         }
-      }
-   }
+            // Find walkable block closest to target
+            if (mc.level.isEmptyBlock(new BlockPos((int) (mc.player.position().x + vec.x), (int) (mc.player.position().y + vec.y), (int) (mc.player.position().z + vec.z)))) {
+                // Note: vec.add in 1.8.9 returns a new Vec3. In Fabric Vec3d.add returns a new Vec3d.
+                // However, BlockPos constructor taking Vec3d is not standard in vanilla.
+                // I adjusted the BlockPos construction above to be safe using coords.
+
+                this.walkingDestinationBlock = BlockUtil.getWalkableBlocksAround(PlayerUtil.getBlockStandingOn())
+                        .stream()
+                        .min(Comparator.comparingDouble(miner.getTargetBlockPos()::distSqr))
+                        .map(b -> new Vec3(b.getX() + 0.5, b.getY(), b.getZ() + 0.5))
+                        .orElse(null);
+            }
+        }
+    }
 }

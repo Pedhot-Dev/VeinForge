@@ -5,17 +5,17 @@ import me.grish.veinforge.util.Logger;
 
 public interface FishingMacroState {
 
-   void onStart(FishingMacro macro);
+    void onStart(FishingMacro macro);
 
-   FishingMacroState onTick(FishingMacro macro);
+    FishingMacroState onTick(FishingMacro macro);
 
-   void onEnd(FishingMacro macro);
+    void onEnd(FishingMacro macro);
 
-   default void log(String message) {
-      Logger.sendLog("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void log(String message) {
+        Logger.sendLog("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 
-   default void send(String message) {
-      Logger.sendMessage("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void send(String message) {
+        Logger.sendMessage("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 }

@@ -15,16 +15,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
 
-   @Shadow
-   public LocalPlayer player;
+    @Shadow
+    public LocalPlayer player;
 
-   /**
-    * Prevent losing focus when macro is running.
-    */
-   @Inject(method = "setWindowActive", at = @At("HEAD"), cancellable = true)
-   private void onWindowFocusChanged(boolean focused, CallbackInfo ci) {
-      if (!focused && MacroManager.getInstance().isRunning()) {
-         ci.cancel();
-      }
-   }
+    /**
+     * Prevent losing focus when macro is running.
+     */
+    @Inject(method = "setWindowActive", at = @At("HEAD"), cancellable = true)
+    private void onWindowFocusChanged(boolean focused, CallbackInfo ci) {
+        if (!focused && MacroManager.getInstance().isRunning()) {
+            ci.cancel();
+        }
+    }
 }

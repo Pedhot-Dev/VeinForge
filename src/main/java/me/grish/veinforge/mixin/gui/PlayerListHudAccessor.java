@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(PlayerTabOverlay.class)
 public interface PlayerListHudAccessor {
 
-   @Accessor("header")
-   Component veinforge$getHeader();
+    @Accessor("header")
+    Component veinforge$getHeader();
 
-   @Accessor("footer")
-   Component veinforge$getFooter();
+    @Accessor("footer")
+    Component veinforge$getFooter();
 }

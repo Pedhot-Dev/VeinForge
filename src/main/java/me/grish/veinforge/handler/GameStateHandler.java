@@ -13,6 +13,7 @@ import me.grish.veinforge.util.helper.location.SubLocation;
 import me.grish.veinforge.util.tablist.TabListParser;
 import me.grish.veinforge.util.tablist.WidgetType;
 import net.minecraft.client.Minecraft;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

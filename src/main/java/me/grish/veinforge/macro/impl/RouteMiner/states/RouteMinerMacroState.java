@@ -9,22 +9,22 @@ import me.grish.veinforge.util.Logger;
  */
 public interface RouteMinerMacroState {
 
-   void onStart(RouteMinerMacro macro);
+    void onStart(RouteMinerMacro macro);
 
-   RouteMinerMacroState onTick(RouteMinerMacro macro);
+    RouteMinerMacroState onTick(RouteMinerMacro macro);
 
-   void onEnd(RouteMinerMacro macro);
+    void onEnd(RouteMinerMacro macro);
 
-   default void log(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void log(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 
-   default void logError(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
-   }
+    default void logError(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
+    }
 
-   default void send(String message) {
-      Logger.addMessage("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void send(String message) {
+        Logger.addMessage("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 
 }

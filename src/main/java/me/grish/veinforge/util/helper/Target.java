@@ -10,53 +10,53 @@ import net.minecraft.world.phys.Vec3;
 
 public class Target {
 
-   private Vec3 vec;
-   @Getter
-   private Entity entity;
-   @Getter
-   private BlockPos blockPos;
-   @Getter
-   private Angle angle;
-   @Accessors(fluent = true)
-   @Setter
-   @Getter
-   private float additionalY = (float) (1 + Math.random()) * 0.75f;
+    private Vec3 vec;
+    @Getter
+    private Entity entity;
+    @Getter
+    private BlockPos blockPos;
+    @Getter
+    private Angle angle;
+    @Accessors(fluent = true)
+    @Setter
+    @Getter
+    private float additionalY = (float) (1 + Math.random()) * 0.75f;
 
-   public Target(Vec3 vec) {
-      this.vec = vec;
-   }
+    public Target(Vec3 vec) {
+        this.vec = vec;
+    }
 
-   public Target(Entity entity) {
-      this.entity = entity;
-   }
+    public Target(Entity entity) {
+        this.entity = entity;
+    }
 
-   public Target(BlockPos blockPos) {
-      this.blockPos = blockPos;
-   }
+    public Target(BlockPos blockPos) {
+        this.blockPos = blockPos;
+    }
 
-   public Target(Angle angle) {
-      this.angle = angle;
-   }
+    public Target(Angle angle) {
+        this.angle = angle;
+    }
 
-   // Ensures Rotation Always Ends
-   public Angle getTargetAngle() {
-      if (blockPos != null) {
-         return AngleUtil.getRotation(blockPos);
-      }
+    // Ensures Rotation Always Ends
+    public Angle getTargetAngle() {
+        if (blockPos != null) {
+            return AngleUtil.getRotation(blockPos);
+        }
 
-      if (vec != null) {
-         return AngleUtil.getRotation(vec);
-      }
+        if (vec != null) {
+            return AngleUtil.getRotation(vec);
+        }
 
-      if (entity != null) {
-         return AngleUtil.getRotation(entity.position().add(0, additionalY, 0));
-      }
+        if (entity != null) {
+            return AngleUtil.getRotation(entity.position().add(0, additionalY, 0));
+        }
 
-      return angle;
-   }
+        return angle;
+    }
 
-   @Override
-   public String toString() {
-      return "Vec3: " + this.vec + ", Ent: " + (this.entity != null ? this.entity.getId() : "null") + ", Pos: " + this.blockPos + ", Angle: " + this.angle;
-   }
+    @Override
+    public String toString() {
+        return "Vec3: " + this.vec + ", Ent: " + (this.entity != null ? this.entity.getId() : "null") + ", Pos: " + this.blockPos + ", Angle: " + this.angle;
+    }
 }

@@ -15,26 +15,26 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 public class MotionUpdateEvent {
 
-   private static final List<Consumer<MotionUpdateEvent>> listeners = new ArrayList<>();
+    private static final List<Consumer<MotionUpdateEvent>> listeners = new ArrayList<>();
 
-   public float yaw;
-   public float pitch;
+    public float yaw;
+    public float pitch;
 
-   public static void register(Consumer<MotionUpdateEvent> listener) {
-      listeners.add(listener);
-   }
+    public static void register(Consumer<MotionUpdateEvent> listener) {
+        listeners.add(listener);
+    }
 
-   public static void fire(MotionUpdateEvent event) {
-      for (Consumer<MotionUpdateEvent> listener : listeners) {
-         listener.accept(event);
-      }
-   }
+    public static void fire(MotionUpdateEvent event) {
+        for (Consumer<MotionUpdateEvent> listener : listeners) {
+            listener.accept(event);
+        }
+    }
 
-   public void setYaw(float yaw) {
-      this.yaw = yaw;
-   }
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
 
-   public void setPitch(float pitch) {
-      this.pitch = pitch;
-   }
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
 }

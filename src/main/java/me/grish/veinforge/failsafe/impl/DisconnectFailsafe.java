@@ -9,33 +9,33 @@ import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 
 public class DisconnectFailsafe extends AbstractFailsafe {
 
-   @Getter
-   private static final DisconnectFailsafe instance = new DisconnectFailsafe();
+    @Getter
+    private static final DisconnectFailsafe instance = new DisconnectFailsafe();
 
-   @Override
-   public String getName() {
-      return "DisconnectFailsafe";
-   }
+    @Override
+    public String getName() {
+        return "DisconnectFailsafe";
+    }
 
-   @Override
-   public Failsafe getFailsafeType() {
-      return Failsafe.DISCONNECT;
-   }
+    @Override
+    public Failsafe getFailsafeType() {
+        return Failsafe.DISCONNECT;
+    }
 
-   @Override
-   public int getPriority() {
-      return 10;
-   }
+    @Override
+    public int getPriority() {
+        return 10;
+    }
 
-   @Override
-   public boolean onPacketReceive(Packet<?> packet) {
-      return packet instanceof ClientboundDisconnectPacket || mc.gui.screen() instanceof DisconnectedScreen;
-   }
+    @Override
+    public boolean onPacketReceive(Packet<?> packet) {
+        return packet instanceof ClientboundDisconnectPacket || mc.gui.screen() instanceof DisconnectedScreen;
+    }
 
-   @Override
-   public boolean react() {
-      warn("Disconnected. Disabling Macro");
-      MacroManager.getInstance().disable();
-      return true;
-   }
+    @Override
+    public boolean react() {
+        warn("Disconnected. Disabling Macro");
+        MacroManager.getInstance().disable();
+        return true;
+    }
 }

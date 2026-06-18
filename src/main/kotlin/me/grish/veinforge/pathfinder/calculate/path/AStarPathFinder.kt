@@ -29,7 +29,8 @@ class AStarPathFinder(val startX: Int, val startY: Int, val startZ: Int, val goa
     private val closedSet: Long2ObjectMap<PathNode> = Long2ObjectOpenHashMap()
     private var calculating = false
     private var iterations = 0
-    @Volatile private var lastTelemetry = SearchTelemetry()
+    @Volatile
+    private var lastTelemetry = SearchTelemetry()
 
     fun getLastTelemetry(): SearchTelemetry {
         return lastTelemetry

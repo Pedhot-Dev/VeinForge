@@ -11,44 +11,44 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
  */
 public final class ChatPacketUtil {
 
-   private ChatPacketUtil() {
-   }
+    private ChatPacketUtil() {
+    }
 
-   /**
-    * @return a best-effort plain string, or null if not a chat packet.
-    */
-   public static String extractMessage(Packet<?> packet) {
-      if (packet == null) {
-         return null;
-      }
+    /**
+     * @return a best-effort plain string, or null if not a chat packet.
+     */
+    public static String extractMessage(Packet<?> packet) {
+        if (packet == null) {
+            return null;
+        }
 
-      if (packet instanceof ClientboundSystemChatPacket messagePacket) {
-         // GameMessageS2CPacket is used for both chat (overlay=false) and action bar (overlay=true).
-         return strip(messagePacket.content().getString());
-      }
+        if (packet instanceof ClientboundSystemChatPacket messagePacket) {
+            // GameMessageS2CPacket is used for both chat (overlay=false) and action bar (overlay=true).
+            return strip(messagePacket.content().getString());
+        }
 
-      if (packet instanceof ClientboundPlayerChatPacket chatPacket) {
-         // Player chat. Body content is unformatted text.
-         return strip(chatPacket.body().content());
-      }
+        if (packet instanceof ClientboundPlayerChatPacket chatPacket) {
+            // Player chat. Body content is unformatted text.
+            return strip(chatPacket.body().content());
+        }
 
-      if (packet instanceof ClientboundSetActionBarTextPacket overlayPacket) {
-         // Action bar overlay.
-         return strip(overlayPacket.text().getString());
-      }
+        if (packet instanceof ClientboundSetActionBarTextPacket(net.minecraft.network.chat.Component text)) {
+            // Action bar overlay.
+            return strip(text.getString());
+        }
 
-      return null;
-   }
+        return null;
+    }
 
-   private static String strip(String s) {
-      if (s == null) {
-         return null;
-      }
-      String stripped = ChatFormatting.stripFormatting(s);
-      if (stripped == null) {
-         stripped = s;
-      }
-      stripped = stripped.trim();
-      return stripped.isEmpty() ? null : stripped;
-   }
+    private static String strip(String s) {
+        if (s == null) {
+            return null;
+        }
+        String stripped = ChatFormatting.stripFormatting(s);
+        if (stripped == null) {
+            stripped = s;
+        }
+        stripped = stripped.trim();
+        return stripped.isEmpty() ? null : stripped;
+    }
 }

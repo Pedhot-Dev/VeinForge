@@ -9,21 +9,21 @@ import me.grish.veinforge.util.Logger;
  */
 public interface GlacialMacroState {
 
-   void onStart(GlacialMacro macro);
+    void onStart(GlacialMacro macro);
 
-   GlacialMacroState onTick(GlacialMacro macro);
+    GlacialMacroState onTick(GlacialMacro macro);
 
-   void onEnd(GlacialMacro macro);
+    void onEnd(GlacialMacro macro);
 
-   default void log(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void log(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 
-   default void logError(String message) {
-      System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
-   }
+    default void logError(String message) {
+        System.out.println("[" + this.getClass().getSimpleName() + "] ERROR: " + message);
+    }
 
-   default void send(String message) {
-      Logger.addMessage("[" + this.getClass().getSimpleName() + "] " + message);
-   }
+    default void send(String message) {
+        Logger.addMessage("[" + this.getClass().getSimpleName() + "] " + message);
+    }
 }

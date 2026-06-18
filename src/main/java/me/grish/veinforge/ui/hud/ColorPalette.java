@@ -1,7 +1,5 @@
 package me.grish.veinforge.ui.hud;
 
-import java.awt.Color;
-
 public class ColorPalette {
     // Primary palette
     public static final int SLATE_900 = 0xFF0F172A;
