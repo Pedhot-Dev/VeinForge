@@ -39,6 +39,15 @@ public final class VFRenderLayers {
                     .createRenderSetup()
     );
 
+    /**
+     * World-space debug lines with depth test.
+     */
+    public static final RenderType LINES_DEPTH = RenderType.create(
+            "veinforge:lines_depth",
+            RenderSetup.builder(VFRenderPipelines.LINES_DEPTH)
+                    .createRenderSetup()
+    );
+
     private VFRenderLayers() {
     }
 }

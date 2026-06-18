@@ -25,11 +25,11 @@ public class RotationHandler {
     private static final float MAX_PITCH_SPEED_DEG_PER_SEC = 180f;
     private static final float NEAR_SLOWDOWN_DEG = 10f;
     private static final float MIN_SPEED_FACTOR = 0.35f;
-    private static final float OVERSHOOT_CHANCE = 0.15f;
+    private static final float OVERSHOOT_CHANCE = 0.05f;
     private static final float OVERSHOOT_YAW_MIN = 0.4f;
-    private static final float OVERSHOOT_YAW_MAX = 1.2f;
+    private static final float OVERSHOOT_YAW_MAX = 0.9f;
     private static final float OVERSHOOT_PITCH_MIN = 0.2f;
-    private static final float OVERSHOOT_PITCH_MAX = 0.6f;
+    private static final float OVERSHOOT_PITCH_MAX = 0.8f;
     private static RotationHandler instance;
     private final Queue<RotationConfiguration> rotations = new LinkedList<>();
     private final Minecraft mc = Minecraft.getInstance();

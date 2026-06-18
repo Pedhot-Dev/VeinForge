@@ -30,6 +30,7 @@ public final class RenderUtil {
 
     private static PoseStack activePoseStack;
     private static SubmitNodeCollector activeNodeCollector;
+    private static boolean pushedWorldMatrices;
 
     private RenderUtil() {
     }
@@ -37,20 +38,23 @@ public final class RenderUtil {
     public static void beginWorldRender(LevelRenderContext context) {
         activeNodeCollector = context.submitNodeCollector();
         activePoseStack = context.poseStack();
+        pushedWorldMatrices = false;
 
         if (activePoseStack != null) {
             Vec3 cameraPos = mc.gameRenderer.mainCamera().position();
             activePoseStack.pushPose();
             activePoseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+            pushedWorldMatrices = true;
         }
     }
 
     public static void endWorldRender() {
-        if (activePoseStack != null) {
+        if (activePoseStack != null  && pushedWorldMatrices) {
             activePoseStack.popPose();
         }
         activeNodeCollector = null;
         activePoseStack = null;
+        pushedWorldMatrices = false;
     }
 
     public static void drawPoint(Vec3 vec, Color color) {

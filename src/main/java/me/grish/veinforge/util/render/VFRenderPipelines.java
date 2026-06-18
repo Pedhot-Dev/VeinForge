@@ -57,6 +57,19 @@ public final class VFRenderPipelines {
                     .build()
     );
 
+    public static final RenderPipeline LINES_DEPTH = RenderPipelines.register(
+            RenderPipeline.builder()
+                    .withVertexShader("core/position_color")
+                    .withFragmentShader("core/position_color")
+                    .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
+                    .withPrimitiveTopology(PrimitiveTopology.LINES)
+                    .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+                    .withCull(false)
+                    .withLocation(Identifier.fromNamespaceAndPath("veinforge", "pipeline/lines_depth"))
+                    .build()
+    );
+
     private VFRenderPipelines() {
     }
 }
