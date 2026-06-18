@@ -36,7 +36,6 @@ public final class VFRenderLayers {
     public static final RenderType LINES_NO_DEPTH = RenderType.create(
             "veinforge:lines_no_depth",
             RenderSetup.builder(VFRenderPipelines.LINES_NO_DEPTH)
-                    .sortOnUpload()
                     .createRenderSetup()
     );
 

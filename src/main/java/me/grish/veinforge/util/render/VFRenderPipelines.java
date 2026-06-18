@@ -50,7 +50,7 @@ public final class VFRenderPipelines {
                     .withFragmentShader("core/position_color")
                     .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                     .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
-                    .withPrimitiveTopology(PrimitiveTopology.DEBUG_LINES)
+                    .withPrimitiveTopology(PrimitiveTopology.LINES)
                     .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
                     .withCull(false)
                     .withLocation(Identifier.fromNamespaceAndPath("veinforge", "pipeline/lines_no_depth"))
