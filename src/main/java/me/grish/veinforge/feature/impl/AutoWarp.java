@@ -275,8 +275,8 @@ public class AutoWarp extends AbstractFeature {
    
        return ip.equals("hypixel.net")
                || ip.endsWith(".hypixel.net")
-               || ip.equals("hypixel.dev")
-               || ip.endsWith(".hypixel.dev");
+               || ip.equals("hypixel.io")
+               || ip.endsWith(".hypixel.io");
    }
 
    public enum Error {
