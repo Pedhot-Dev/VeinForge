@@ -125,10 +125,16 @@ public class WarpingState implements FishingMacroState {
    }
 
    private boolean isOnHypixel() {
-      String ip = GameStateHandler.getInstance().getServerIp();
-      if (ip == null || ip.trim().isEmpty()) {
-         return false;
-      }
-      return ip.toLowerCase(Locale.ROOT).contains("hypixel.net");
+       String ip = GameStateHandler.getInstance().getServerIp();
+       if (ip == null || ip.trim().isEmpty()) {
+           return false;
+       }
+   
+       ip = ip.toLowerCase(Locale.ROOT);
+   
+       return ip.equals("hypixel.net")
+               || ip.endsWith(".hypixel.net")
+               || ip.equals("hypixel.dev")
+               || ip.endsWith(".hypixel.dev");
    }
 }
