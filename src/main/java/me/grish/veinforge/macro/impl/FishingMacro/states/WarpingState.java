@@ -134,7 +134,7 @@ public class WarpingState implements FishingMacroState {
    
        return ip.equals("hypixel.net")
                || ip.endsWith(".hypixel.net")
-               || ip.equals("hypixel.dev")
-               || ip.endsWith(".hypixel.dev");
+               || ip.equals("hypixel.io")
+               || ip.endsWith(".hypixel.io");
    }
 }
