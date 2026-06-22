@@ -5,6 +5,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (ex: 1.0.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -21,9 +26,14 @@ jobs:
       - name: Extract Version
         id: get_version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+      
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          
+      
           if [[ "$VERSION" == *"-pre"* ]]; then
             echo "RELEASE_TYPE=pre-release" >> $GITHUB_OUTPUT
           else
